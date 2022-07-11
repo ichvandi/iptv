@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "383363061259",
+    "project_id": "iptv-ab548",
+    "storage_bucket": "iptv-ab548.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383363061259:android:cbeec3a334932e56e2d90e",
+        "android_client_info": {
+          "package_name": "com.vandoc.iptv"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "383363061259-i6c5p8emb2il8t27dnis8el4iekh1efq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZpnsDCxVCRVrBmz4lp_UJ6-rXQE_lKmg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "383363061259-i6c5p8emb2il8t27dnis8el4iekh1efq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
