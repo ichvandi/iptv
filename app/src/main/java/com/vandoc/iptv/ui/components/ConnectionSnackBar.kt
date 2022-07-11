@@ -16,8 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vandoc.iptv.R
 import com.vandoc.iptv.util.ConnectionFlow
-import com.vandoc.iptv.util.NavigatorBarManager
-import com.vandoc.iptv.util.findActivity
+import com.vandoc.iptv.util.NavigatorBarChangeColorManager
 
 /**
  * @author Achmad Ichsan
@@ -29,14 +28,11 @@ fun ConnectionSnackBar() {
     val context = LocalContext.current
     val connectionFlow = remember { ConnectionFlow(context) }
     val connectionState = connectionFlow.connectionState.collectAsState(initial = true).value
-    val navigationBarManager = remember {
-        NavigatorBarManager(context.findActivity() ?: throw Exception("No Activity Attached"))
-    }
 
     if (!connectionState) {
         ConnectionSnackBarUI(text = "Connection Lost")
     }
-    navigationBarManager.changeColor(if (!connectionState) R.color.red else null)
+    NavigatorBarChangeColorManager(if (!connectionState) R.color.red else null)
 }
 
 @Composable
