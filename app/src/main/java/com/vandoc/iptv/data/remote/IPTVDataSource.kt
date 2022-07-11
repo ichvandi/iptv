@@ -17,15 +17,19 @@ class IPTVDataSource @Inject constructor(
 ) {
 
     suspend fun getChannels(query: Map<String, String>): Flow<Resource<List<Channel>>> {
-        val response = service.getChannels(query)
         return flow {
-            if (response.isSuccessful) {
-                if (remoteConfig.getBoolean("is_nsfw")) {
-                    emit(Resource.Success(response.body()?.data.orEmpty()))
+            try {
+                val response = service.getChannels(query)
+                if (response.isSuccessful) {
+                    if (remoteConfig.getBoolean("is_nsfw")) {
+                        emit(Resource.Success(response.body()?.data.orEmpty()))
+                    } else {
+                        emit(Resource.Success(response.body()?.data.orEmpty().filter(::noNsfw)))
+                    }
                 } else {
-                    emit(Resource.Success(response.body()?.data.orEmpty().filter(::noNsfw)))
+                    emit(Resource.Error.Unknown("An error occurred!"))
                 }
-            } else {
+            } catch (e: Exception) {
                 emit(Resource.Error.Unknown("An error occurred!"))
             }
         }
