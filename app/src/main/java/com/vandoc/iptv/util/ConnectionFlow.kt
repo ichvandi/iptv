@@ -1,4 +1,4 @@
-package com.vandoc.iptv.base
+package com.vandoc.iptv.util
 
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
@@ -6,14 +6,16 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import android.util.Log
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.net.InetAddress
+import java.net.UnknownHostException
 
 /**
  * @author Achmad Ichsan
@@ -42,8 +44,23 @@ class ConnectionFlow(context: Context) {
 
         connectivityManager.registerNetworkCallback(request, networkCallback)
 
+        val requestConnectionJob = CoroutineScope(Dispatchers.IO).launch {
+            while (true) {
+                try {
+                    val result = !InetAddress.getByName("www.google.com").equals("")
+                    trySend(result)
+                } catch (e: UnknownHostException) {
+                    trySend(false)
+                    Timber.e(e)
+                }
+
+                delay(5000)
+            }
+        }
+
         awaitClose {
             connectivityManager.unregisterNetworkCallback(networkCallback)
+            requestConnectionJob.cancel()
         }
     }
 
