@@ -14,7 +14,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.vandoc.iptv.R
 import com.vandoc.iptv.util.ConnectionFlow
+import com.vandoc.iptv.util.NavigatorBarChangeColorManager
 
 /**
  * @author Achmad Ichsan
@@ -28,19 +30,25 @@ fun ConnectionSnackBar() {
     val connectionState = connectionFlow.connectionState.collectAsState(initial = true).value
 
     if (!connectionState) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(20.dp)
-                .background(Color.Red)
-        ) {
-            Text(
-                text = "Connection lost",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        ConnectionSnackBarUI(text = "Connection Lost")
+    }
+    NavigatorBarChangeColorManager(if (!connectionState) R.color.red else null)
+}
+
+@Composable
+private fun ConnectionSnackBarUI(text: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(20.dp)
+            .background(Color.Red)
+    ) {
+        Text(
+            text = text,
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
