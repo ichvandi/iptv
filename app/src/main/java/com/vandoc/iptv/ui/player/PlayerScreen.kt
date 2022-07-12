@@ -7,6 +7,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.vandoc.iptv.ui.components.Player
 import com.vandoc.iptv.util.LockScreenOrientation
+import com.vandoc.iptv.util.StatusBar
 
 /**
  * @author Ichvandi
@@ -19,7 +20,9 @@ fun PlayerScreen(
     streamUrls: Array<String>,
     viewModel: PlayerViewModel = hiltViewModel()
 ) {
+    StatusBar(shouldShow = false)
     LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+
     Player(
         streamUrls = streamUrls,
         onStreamSuccess = { viewModel.setAction(PlayerAction.StreamSuccess("")) },

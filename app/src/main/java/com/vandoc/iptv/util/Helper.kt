@@ -4,12 +4,18 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.Resources
+import android.view.Window
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
@@ -134,6 +140,39 @@ fun LockScreenOrientation(orientation: Int) {
         }
     }
 }
+
+@Composable
+fun StatusBar(shouldShow: Boolean, window: Window? = findWindow()) {
+    if (window == null) return
+
+    val controller = WindowInsetsControllerCompat(window, window.decorView)
+    if (!shouldShow) {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        controller.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(WindowInsetsCompat.Type.systemBars())
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            WindowCompat.setDecorFitsSystemWindows(window, true)
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE
+            controller.show(WindowInsetsCompat.Type.systemBars())
+        }
+    }
+}
+
+@Composable
+private fun findWindow(): Window? =
+    (LocalView.current.parent as? DialogWindowProvider)?.window
+        ?: LocalView.current.context.findWindow()
+
+private tailrec fun Context.findWindow(): Window? =
+    when (this) {
+        is Activity -> window
+        is ContextWrapper -> baseContext.findWindow()
+        else -> null
+    }
 
 fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
