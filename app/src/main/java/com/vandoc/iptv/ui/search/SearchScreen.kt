@@ -22,7 +22,6 @@ import com.vandoc.iptv.R
 import com.vandoc.iptv.ui.components.CoordinatorLayout
 import com.vandoc.iptv.ui.components.GridChannel
 import com.vandoc.iptv.ui.components.SearchBar
-import com.vandoc.iptv.ui.destinations.PlayerScreenDestination
 import com.vandoc.iptv.util.TOOLBAR_HEIGHT_IN_DP
 import kotlin.math.roundToInt
 
@@ -81,12 +80,12 @@ fun SearchScreen(
                     channels = uiState.channels,
                     columns = GridCells.Fixed(2),
                     onItemClicked = { channel ->
-                        navigator.navigate(
-                            PlayerScreenDestination(
+//                        navigator.navigate(
+//                            PlayerScreenDestination(
 //                                channel.url.orEmpty().toTypedArray()
-                                emptyArray()
-                            )
-                        )
+//                                emptyArray()
+//                            )
+//                        )
                     },
                     contentPadding = PaddingValues(
                         start = 8.dp,
