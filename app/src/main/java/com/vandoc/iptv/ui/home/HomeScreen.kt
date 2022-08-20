@@ -1,8 +1,10 @@
 package com.vandoc.iptv.ui.home
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -38,19 +40,21 @@ fun MainScreen(
         }
     }
 
-    Column {
-        SearchBar(
-            hint = "Search channel name",
-            onSearch = {
-                navigator.navigate(SearchScreenDestination(it))
-            },
-            modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
-        )
+    LazyColumn(contentPadding = PaddingValues(bottom = 16.dp)) {
+        item {
+            SearchBar(
+                hint = "Search channel name",
+                onSearch = {
+                    navigator.navigate(SearchScreenDestination(it))
+                },
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)
+            )
+        }
 
-        if (uiState.channels.isNotEmpty()) {
+        items(uiState.sections) { section ->
             SectionChannels(
-                section = "Stream all channels",
-                channels = uiState.channels,
+                section = section.name,
+                channels = section.channels,
                 onItemClicked = {
 //                    navigator.navigate(PlayerScreenDestination(it.url.orEmpty().toTypedArray()))
                 },

@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,7 +36,11 @@ fun Section(
             text = section,
             fontSize = 18.sp,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .padding(top = 16.dp, end = 16.dp, bottom = 16.dp)
+                .weight(1f)
         )
         TextButton(onClick = { onViewAllClicked(section) }) {
             Text(text = "View All", style = MaterialTheme.typography.bodyMedium)

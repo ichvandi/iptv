@@ -1,12 +1,19 @@
 package com.vandoc.iptv.ui.home
 
 import androidx.lifecycle.viewModelScope
+import com.vandoc.iptv.base.AppDispatcher
 import com.vandoc.iptv.base.BaseComposeViewModel
 import com.vandoc.iptv.base.Resource
 import com.vandoc.iptv.data.IPTVRepository
+import com.vandoc.iptv.data.model.local.Section
 import com.vandoc.iptv.data.model.request.SearchChannelsRequest
+import com.vandoc.iptv.util.getNetworkDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -15,55 +22,61 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val appDispatcher: AppDispatcher,
     private val repository: IPTVRepository
 ) : BaseComposeViewModel<HomeAction, HomeState, HomeEvent>(HomeState()) {
 
     init {
-        setAction(
-            HomeAction.GetChannels(
-                query = mapOf(
-                    "page" to "1",
-                    "size" to "10",
-                    "has_url" to "true",
-                    "msgpack" to "0"
+        viewModelScope.launch(appDispatcher.main) {
+            val networkResponse = withContext(appDispatcher.io) { getNetworkDetails() }
+            val locale = Locale.getDefault()
+            setAction(
+                HomeAction.GetChannels(
+                    sections = listOf(
+                        "Stream by country ${networkResponse.country}",
+                        "Stream by language ${locale.displayLanguage}",
+                        "Stream by category Animation"
+                    ),
+                    queries = listOf(
+                        SearchChannelsRequest(country = networkResponse.countryIso),
+                        SearchChannelsRequest(language = locale.isO3Language),
+                        SearchChannelsRequest(category = "animation")
+                    )
                 )
             )
-        )
+        }
     }
 
     override fun handleAction(action: HomeAction) {
         when (action) {
-            is HomeAction.GetChannels -> getChannels(action.query)
+            is HomeAction.GetChannels -> getSectionChannels(action.sections, action.queries)
         }
     }
 
-    private fun getChannels(query: Map<String, String>) = viewModelScope.launch {
-        repository.searchChannels(SearchChannelsRequest()).collect { response ->
-            when (response) {
-                is Resource.Loading -> {
-                    setState {
-                        copy(isLoading = true)
-                    }
-                }
-                is Resource.Success -> {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            channels = response.data?.channels.orEmpty()
+    private fun getSectionChannels(
+        sections: List<String>,
+        queries: List<SearchChannelsRequest>
+    ) = viewModelScope.launch {
+        val sectionChannels = mutableListOf<Section>()
+        val responses = queries.map {
+            async(appDispatcher.io) { repository.searchChannels(it) }
+        }.awaitAll()
+
+        responses.forEachIndexed { index, response ->
+            response.collect { resource ->
+                setState { copy(isLoading = resource is Resource.Loading) }
+                if (resource is Resource.Success) {
+                    sectionChannels.add(
+                        Section(
+                            name = sections[index],
+                            channels = resource.data?.channels.orEmpty()
                         )
-                    }
+                    )
                 }
-                is Resource.Error.Unknown -> {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            errorMessage = response.message
-                        )
-                    }
-                }
-                else -> Unit
             }
         }
+
+        setState { copy(sections = sectionChannels) }
     }
 
 }

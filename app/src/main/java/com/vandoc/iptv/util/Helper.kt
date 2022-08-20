@@ -25,6 +25,7 @@ import com.google.gson.Gson
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.vandoc.iptv.BuildConfig
 import com.vandoc.iptv.base.Resource
+import com.vandoc.iptv.data.model.response.NetworkResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transform
@@ -33,6 +34,7 @@ import retrofit2.Response
 import timber.log.Timber
 import java.net.ConnectException
 import java.net.SocketTimeoutException
+import java.net.URL
 import java.net.UnknownHostException
 
 inline fun <reified T : Any> networkCall(crossinline block: suspend () -> Response<T>): Flow<Resource<T>> {
@@ -189,3 +191,13 @@ inline fun <reified T> Flow<T>.observeWithLifecycle(
 }
 
 val TOOLBAR_HEIGHT_IN_DP = 56.dp
+
+fun getNetworkDetails(): NetworkResponse {
+    return Gson().fromJson(String(
+        URL("https://ifconfig.co/json")
+            .openConnection()
+            .apply { connect() }
+            .getInputStream()
+            .readBytes()
+    ), NetworkResponse::class.java)
+}
