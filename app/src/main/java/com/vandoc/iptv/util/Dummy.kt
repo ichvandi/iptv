@@ -1,35 +1,20 @@
 package com.vandoc.iptv.util
 
-import com.vandoc.iptv.data.model.Category
-import com.vandoc.iptv.data.model.Channel
+import com.vandoc.iptv.data.model.local.ChannelMini
 
 /**
  * @author Ichvandi
  * Created on 10/07/2022 at 08:43.
  */
 val DUMMY_CHANNELS = List(2) {
-    Channel(
-        "$it",
-        "Channel $it",
-        "Native Channel Name",
-        "",
-        "US",
-        "",
-        "",
-        emptyList(),
-        emptyList(),
-        listOf(Category("1", "Genre 1"), Category("2", "Genre 2")),
-        it == 0,
-        "",
-        "",
-        "",
-        "",
-        "",
-        emptyList(),
-        if (it == 0) "online" else "error",
-        "",
-        "",
-        "",
+    ChannelMini(
+        id = "$it",
+        name = "Channel $it",
+        isNsfw = it == 0,
+        logo = "https://www.lyngsat.com/logo/tv/ii/insert_id.png",
+        country = "Country $it",
+        flag = "https://flagicons.lipis.dev/flags/1x1/id.svg",
+        categories = listOf("Animation", "Comedy")
     )
 }
 

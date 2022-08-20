@@ -83,7 +83,8 @@ fun SearchScreen(
                     onItemClicked = { channel ->
                         navigator.navigate(
                             PlayerScreenDestination(
-                                channel.url.orEmpty().toTypedArray()
+//                                channel.url.orEmpty().toTypedArray()
+                                emptyArray()
                             )
                         )
                     },

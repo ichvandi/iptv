@@ -1,7 +1,7 @@
 package com.vandoc.iptv.data.remote
 
 import com.vandoc.iptv.base.BaseResponse
-import com.vandoc.iptv.data.model.Channel
+import com.vandoc.iptv.data.model.response.ChannelPagingResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
@@ -12,10 +12,10 @@ import retrofit2.http.QueryMap
  */
 interface IPTVService {
 
-    @GET("channel")
-    suspend fun getChannels(
+    @GET("channels")
+    suspend fun searchChannels(
         @QueryMap
         query: Map<String, String>
-    ): Response<BaseResponse<List<Channel>>>
+    ): Response<BaseResponse<ChannelPagingResponse>>
 
 }

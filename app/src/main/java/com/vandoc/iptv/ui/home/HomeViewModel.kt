@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.vandoc.iptv.base.BaseComposeViewModel
 import com.vandoc.iptv.base.Resource
 import com.vandoc.iptv.data.IPTVRepository
+import com.vandoc.iptv.data.model.request.SearchChannelsRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,7 +38,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun getChannels(query: Map<String, String>) = viewModelScope.launch {
-        repository.getChannels(query).collect { response ->
+        repository.searchChannels(SearchChannelsRequest()).collect { response ->
             when (response) {
                 is Resource.Loading -> {
                     setState {
@@ -48,7 +49,7 @@ class HomeViewModel @Inject constructor(
                     setState {
                         copy(
                             isLoading = false,
-                            channels = response.data.orEmpty()
+                            channels = response.data?.channels.orEmpty()
                         )
                     }
                 }

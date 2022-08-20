@@ -24,11 +24,9 @@ import androidx.navigation.NavOptionsBuilder
 import com.google.gson.Gson
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.vandoc.iptv.BuildConfig
-import com.vandoc.iptv.base.AppDispatcher
 import com.vandoc.iptv.base.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import retrofit2.Response
@@ -92,10 +90,7 @@ fun Response<*>.getError(): ErrorResponse {
     }
 }
 
-inline fun <T, R> Flow<Resource<T>>.mapResource(
-    dispatcher: AppDispatcher,
-    crossinline mapper: (value: T?) -> R
-): Flow<Resource<R>> =
+inline fun <T, R> Flow<Resource<T>>.mapResource(crossinline mapper: (value: T?) -> R): Flow<Resource<R>> =
     transform { resource ->
         return@transform when (resource) {
             is Resource.Success -> emit(Resource.Success(mapper(resource.data)))
@@ -106,7 +101,7 @@ inline fun <T, R> Flow<Resource<T>>.mapResource(
             is Resource.Error.Unknown -> emit(resource)
             Resource.Loading -> emit(Resource.Loading)
         }
-    }.flowOn(dispatcher.default)
+    }
 
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()

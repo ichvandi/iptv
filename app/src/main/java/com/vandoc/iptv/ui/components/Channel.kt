@@ -18,9 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
@@ -29,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.skydoves.landscapist.coil.CoilImage
 import com.vandoc.iptv.R
-import com.vandoc.iptv.data.model.Channel
+import com.vandoc.iptv.data.model.local.ChannelMini
 import com.vandoc.iptv.ui.theme.IPTVTheme
 import com.vandoc.iptv.util.DUMMY_CHANNELS
 
@@ -40,8 +38,8 @@ import com.vandoc.iptv.util.DUMMY_CHANNELS
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ItemChannel(
-    channel: Channel,
-    onItemClicked: (Channel) -> Unit = {},
+    channel: ChannelMini,
+    onItemClicked: (ChannelMini) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -79,7 +77,7 @@ fun ItemChannel(
 
             // Genres
             Text(
-                text = channel.categories?.joinToString { it.name }.orEmpty(),
+                text = channel.categories.joinToString { it },
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -95,10 +93,13 @@ fun ItemChannel(
                     .padding(top = 16.dp)
                     .fillMaxWidth()
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
+                ) {
                     // Country Logo
                     CoilImage(
-                        imageModel = channel.country,
+                        imageModel = channel.flag,
                         contentScale = ContentScale.Crop,
                         placeHolder = painterResource(id = R.drawable.ic_launcher_background),
                         error = ImageBitmap.imageResource(id = R.drawable.no_image),
@@ -107,40 +108,24 @@ fun ItemChannel(
                             .clip(CircleShape)
                     )
 
-                    // NSFW
-                    if (channel.isNsfw) {
-                        Image(
-                            painter = painterResource(id = R.drawable.nsfw),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .width(32.dp)
-                        )
-                    }
+                    Text(
+                        text = channel.country,
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .wrapContentWidth()
+                    )
                 }
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    val statusColor = if (channel.status.lowercase() == "online")
-                        Color.Green
-                    else
-                        Color.Red
+                // NSFW
+                if (channel.isNsfw) {
                     Image(
-                        painter = ColorPainter(statusColor),
+                        painter = painterResource(id = R.drawable.nsfw),
                         contentDescription = "",
                         modifier = Modifier
-                            .padding(start = 8.dp)
-                            .size(8.dp)
-                            .clip(CircleShape)
-                    )
-
-                    Text(
-                        text = channel.status
-                            .lowercase()
-                            .replaceFirstChar { it.uppercase() },
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .wrapContentWidth()
+                            .width(32.dp)
                     )
                 }
             }
@@ -150,8 +135,8 @@ fun ItemChannel(
 
 @Composable
 fun ListChannel(
-    channels: List<Channel>,
-    onItemClicked: (Channel) -> Unit = {},
+    channels: List<ChannelMini>,
+    onItemClicked: (ChannelMini) -> Unit = {},
     contentPadding: PaddingValues = PaddingValues(0.dp),
     modifier: Modifier = Modifier
 ) {
@@ -171,9 +156,9 @@ fun ListChannel(
 
 @Composable
 fun GridChannel(
-    channels: List<Channel>,
+    channels: List<ChannelMini>,
     columns: GridCells,
-    onItemClicked: (Channel) -> Unit = {},
+    onItemClicked: (ChannelMini) -> Unit = {},
     contentPadding: PaddingValues = PaddingValues(0.dp),
     modifier: Modifier = Modifier
 ) {

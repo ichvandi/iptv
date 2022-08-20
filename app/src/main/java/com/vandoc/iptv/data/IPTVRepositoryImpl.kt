@@ -1,8 +1,11 @@
 package com.vandoc.iptv.data
 
 import com.vandoc.iptv.base.Resource
-import com.vandoc.iptv.data.model.Channel
+import com.vandoc.iptv.data.model.local.ChannelPaging
+import com.vandoc.iptv.data.model.request.SearchChannelsRequest
 import com.vandoc.iptv.data.remote.IPTVDataSource
+import com.vandoc.iptv.util.mapResource
+import com.vandoc.iptv.util.mapper.toLocalModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,10 +20,13 @@ class IPTVRepositoryImpl @Inject constructor(
     private val dataSource: IPTVDataSource
 ) : IPTVRepository {
 
-    override suspend fun getChannels(query: Map<String, String>): Flow<Resource<List<Channel>>> {
+    override suspend fun searchChannels(queries: SearchChannelsRequest): Flow<Resource<ChannelPaging?>> {
         return flow {
             emit(Resource.Loading)
-            dataSource.getChannels(query).flowOn(Dispatchers.IO).collect(::emit)
+            dataSource.searchChannels(queries)
+                .flowOn(Dispatchers.IO)
+                .mapResource { it?.toLocalModel() }
+                .collect(::emit)
         }
     }
 

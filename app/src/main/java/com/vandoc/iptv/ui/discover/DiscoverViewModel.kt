@@ -2,7 +2,6 @@ package com.vandoc.iptv.ui.discover
 
 import androidx.lifecycle.viewModelScope
 import com.vandoc.iptv.base.BaseComposeViewModel
-import com.vandoc.iptv.base.Resource
 import com.vandoc.iptv.data.IPTVRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -24,26 +23,26 @@ class DiscoverViewModel @Inject constructor(
     }
 
     private fun getChannels(query: Map<String, String>) = viewModelScope.launch {
-        repository.getChannels(query).collect { response ->
-            when (response) {
-                is Resource.Loading -> setState {
-                    copy(isLoading = false)
-                }
-                is Resource.Success -> setState {
-                    copy(
-                        isLoading = false,
-                        channels = response.data.orEmpty()
-                    )
-                }
-                is Resource.Error.Unknown -> setState {
-                    copy(
-                        isLoading = false,
-                        errorMessage = response.message
-                    )
-                }
-                else -> Unit
-            }
-        }
+//        repository.searchChannels(query).collect { response ->
+//            when (response) {
+//                is Resource.Loading -> setState {
+//                    copy(isLoading = false)
+//                }
+//                is Resource.Success -> setState {
+//                    copy(
+//                        isLoading = false,
+//                        channels = response.data.orEmpty()
+//                    )
+//                }
+//                is Resource.Error.Unknown -> setState {
+//                    copy(
+//                        isLoading = false,
+//                        errorMessage = response.message
+//                    )
+//                }
+//                else -> Unit
+//            }
+//        }
     }
 
 }

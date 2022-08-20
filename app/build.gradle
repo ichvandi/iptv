@@ -18,7 +18,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        buildConfigField "String", "BASE_URL", '"https://ai-iptv.herokuapp.com/"'
+        buildConfigField "String", "BASE_URL", '"http://192.168.0.2:8080/"'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.debug

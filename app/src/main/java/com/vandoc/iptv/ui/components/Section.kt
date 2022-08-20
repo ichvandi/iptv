@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.vandoc.iptv.data.model.Channel
+import com.vandoc.iptv.data.model.local.ChannelMini
 import com.vandoc.iptv.ui.theme.IPTVTheme
 import com.vandoc.iptv.util.DUMMY_CHANNELS
 import com.vandoc.iptv.util.DUMMY_SECTION
@@ -46,9 +46,9 @@ fun Section(
 @Composable
 fun SectionChannels(
     section: String,
-    channels: List<Channel>,
+    channels: List<ChannelMini>,
     onViewAllClicked: (String) -> Unit = {},
-    onItemClicked: (Channel) -> Unit = {},
+    onItemClicked: (ChannelMini) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {

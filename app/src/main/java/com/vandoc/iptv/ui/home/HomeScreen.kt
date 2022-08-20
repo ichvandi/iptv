@@ -14,7 +14,6 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.vandoc.iptv.ui.components.SearchBar
 import com.vandoc.iptv.ui.components.SectionChannels
 import com.vandoc.iptv.ui.destinations.DiscoverScreenDestination
-import com.vandoc.iptv.ui.destinations.PlayerScreenDestination
 import com.vandoc.iptv.ui.destinations.SearchScreenDestination
 import com.vandoc.iptv.ui.discover.DiscoverArgument
 import com.vandoc.iptv.util.observeWithLifecycle
@@ -53,7 +52,7 @@ fun MainScreen(
                 section = "Stream all channels",
                 channels = uiState.channels,
                 onItemClicked = {
-                    navigator.navigate(PlayerScreenDestination(it.url.orEmpty().toTypedArray()))
+//                    navigator.navigate(PlayerScreenDestination(it.url.orEmpty().toTypedArray()))
                 },
                 onViewAllClicked = {
                     navigator.navigate(
