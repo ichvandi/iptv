@@ -15,7 +15,7 @@ sealed class HomeAction {
 data class HomeState(
     val isLoading: Boolean = false,
     val errorMessage: String = "",
-    val sections: List<Section> = emptyList()
+    val sections: Pair<List<Section>, List<SearchChannelsRequest>> = Pair(emptyList(), emptyList())
 )
 
 sealed class HomeEvent {

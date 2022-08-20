@@ -21,7 +21,6 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.vandoc.iptv.R
 import com.vandoc.iptv.ui.components.CoordinatorLayout
 import com.vandoc.iptv.ui.components.GridChannel
-import com.vandoc.iptv.ui.destinations.PlayerScreenDestination
 import com.vandoc.iptv.util.TOOLBAR_HEIGHT_IN_DP
 import kotlin.math.roundToInt
 import androidx.compose.material3.MaterialTheme as MaterialTheme3
@@ -38,18 +37,7 @@ fun DiscoverScreen(
     navigator: DestinationsNavigator,
     viewModel: DiscoverViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(argument) {
-        viewModel.setAction(
-            DiscoverAction.Discover(
-                query = mapOf(
-                    "page" to argument.page,
-                    "size" to argument.size,
-                    "has_url" to argument.hasUrl,
-                    "msgpack" to argument.msgPack
-                )
-            )
-        )
-    }
+    LaunchedEffect(argument) { viewModel.setAction(DiscoverAction.Discover(argument.query)) }
 
     val uiState = viewModel.uiState
 
@@ -87,12 +75,11 @@ fun DiscoverScreen(
                     channels = uiState.channels,
                     columns = GridCells.Fixed(2),
                     onItemClicked = { channel ->
-                        navigator.navigate(
-                            PlayerScreenDestination(
+//                        navigator.navigate(
+//                            PlayerScreenDestination(
 //                                channel.url.orEmpty().toTypedArray()
-                                emptyArray()
-                            )
-                        )
+//                            )
+//                        )
                     },
                     contentPadding = PaddingValues(
                         start = 8.dp,

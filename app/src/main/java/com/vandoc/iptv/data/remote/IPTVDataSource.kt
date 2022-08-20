@@ -31,7 +31,7 @@ class IPTVDataSource @Inject constructor(
                     queries.broadcastArea?.let { put("broadcast_area", it) }
                     queries.orderBy?.let { put("order_by", it) }
                     queries.orderType?.let { put("order_type", it) }
-                    queries.limit?.let { put("limit", it) }
+                    queries.limit?.let { put("limit", "$it") }
                     queries.cursor?.let { put("cursor", it) }
                 }
                 val response = service.searchChannels(queriesMap)

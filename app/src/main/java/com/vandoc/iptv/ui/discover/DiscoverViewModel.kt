@@ -2,7 +2,9 @@ package com.vandoc.iptv.ui.discover
 
 import androidx.lifecycle.viewModelScope
 import com.vandoc.iptv.base.BaseComposeViewModel
+import com.vandoc.iptv.base.Resource
 import com.vandoc.iptv.data.IPTVRepository
+import com.vandoc.iptv.data.model.request.SearchChannelsRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,27 +24,27 @@ class DiscoverViewModel @Inject constructor(
         }
     }
 
-    private fun getChannels(query: Map<String, String>) = viewModelScope.launch {
-//        repository.searchChannels(query).collect { response ->
-//            when (response) {
-//                is Resource.Loading -> setState {
-//                    copy(isLoading = false)
-//                }
-//                is Resource.Success -> setState {
-//                    copy(
-//                        isLoading = false,
-//                        channels = response.data.orEmpty()
-//                    )
-//                }
-//                is Resource.Error.Unknown -> setState {
-//                    copy(
-//                        isLoading = false,
-//                        errorMessage = response.message
-//                    )
-//                }
-//                else -> Unit
-//            }
-//        }
+    private fun getChannels(query: SearchChannelsRequest) = viewModelScope.launch {
+        repository.searchChannels(query.copy(limit = 25)).collect { response ->
+            when (response) {
+                is Resource.Loading -> setState {
+                    copy(isLoading = false)
+                }
+                is Resource.Success -> setState {
+                    copy(
+                        isLoading = false,
+                        channels = response.data?.channels.orEmpty()
+                    )
+                }
+                is Resource.Error.Unknown -> setState {
+                    copy(
+                        isLoading = false,
+                        errorMessage = response.message
+                    )
+                }
+                else -> Unit
+            }
+        }
     }
 
 }

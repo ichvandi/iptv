@@ -76,7 +76,7 @@ class HomeViewModel @Inject constructor(
             }
         }
 
-        setState { copy(sections = sectionChannels) }
+        setState { copy(sections = Pair(sectionChannels, queries)) }
     }
 
 }

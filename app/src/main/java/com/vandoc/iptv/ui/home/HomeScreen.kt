@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -51,10 +50,10 @@ fun MainScreen(
             )
         }
 
-        items(uiState.sections) { section ->
+        items(uiState.sections.first.size) { index ->
             SectionChannels(
-                section = section.name,
-                channels = section.channels,
+                section = uiState.sections.first[index].name,
+                channels = uiState.sections.first[index].channels,
                 onItemClicked = {
 //                    navigator.navigate(PlayerScreenDestination(it.url.orEmpty().toTypedArray()))
                 },
@@ -62,11 +61,8 @@ fun MainScreen(
                     navigator.navigate(
                         DiscoverScreenDestination(
                             DiscoverArgument(
-                                section = it,
-                                page = "1",
-                                size = "1000",
-                                hasUrl = "true",
-                                msgPack = "0"
+                                it,
+                                uiState.sections.second[index]
                             )
                         )
                     )
