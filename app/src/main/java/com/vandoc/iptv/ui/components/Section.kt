@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vandoc.iptv.data.model.local.ChannelMini
 import com.vandoc.iptv.ui.theme.IPTVTheme
-import com.vandoc.iptv.util.DUMMY_CHANNELS
+import com.vandoc.iptv.util.DUMMY_CHANNELS_MINI
 import com.vandoc.iptv.util.DUMMY_SECTION
 
 /**
@@ -83,6 +83,6 @@ fun SectionPreview() {
 @Composable
 fun SectionChannelsPreview() {
     IPTVTheme {
-        SectionChannels(section = DUMMY_SECTION, channels = DUMMY_CHANNELS)
+        SectionChannels(section = DUMMY_SECTION, channels = DUMMY_CHANNELS_MINI)
     }
 }

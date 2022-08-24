@@ -29,7 +29,7 @@ import com.skydoves.landscapist.coil.CoilImage
 import com.vandoc.iptv.R
 import com.vandoc.iptv.data.model.local.ChannelMini
 import com.vandoc.iptv.ui.theme.IPTVTheme
-import com.vandoc.iptv.util.DUMMY_CHANNELS
+import com.vandoc.iptv.util.DUMMY_CHANNELS_MINI
 
 /**
  * @author Ichvandi
@@ -182,12 +182,12 @@ fun GridChannel(
 @Composable
 fun ItemChannelPreview() {
     IPTVTheme {
-        ItemChannel(DUMMY_CHANNELS.first())
+        ItemChannel(DUMMY_CHANNELS_MINI.first())
     }
 }
 
 @Preview
 @Composable
 fun ListChannelPreview() {
-    ListChannel(channels = DUMMY_CHANNELS)
+    ListChannel(channels = DUMMY_CHANNELS_MINI)
 }

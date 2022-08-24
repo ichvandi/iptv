@@ -7,14 +7,14 @@ import com.vandoc.iptv.data.model.local.ChannelMini
  * @author Ichvandi
  * Created on 10/07/2022 at 08:43.
  */
-val DUMMY_CHANNELS = List(2) {
+val DUMMY_CHANNELS_MINI = List(2) {
     ChannelMini(
         id = "$it",
         name = "Channel $it",
         isNsfw = it == 0,
         logo = "https://www.lyngsat.com/logo/tv/ii/insert_id.png",
         country = "Country $it",
-        flag = "https://flagicons.lipis.dev/flags/1x1/id.svg",
+        flag = "https://raw.githubusercontent.com/emcrisostomo/flags/master/png/256/SG.png",
         categories = listOf("Animation", "Comedy")
     )
 }
