@@ -115,10 +115,11 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:5.0.1'
 
     // Exoplayer
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.0'
-    implementation 'com.google.android.exoplayer:exoplayer-hls:2.18.0'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.0'
-    implementation "com.google.android.exoplayer:extension-okhttp:2.18.0"
+    def exoplayerVersion = "2.18.1"
+    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayerVersion"
+    implementation "com.google.android.exoplayer:exoplayer-hls:$exoplayerVersion"
+    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayerVersion"
+    implementation "com.google.android.exoplayer:extension-okhttp:$exoplayerVersion"
 
     // OkHttp
     implementation "com.squareup.okhttp3:okhttp:4.10.0"
