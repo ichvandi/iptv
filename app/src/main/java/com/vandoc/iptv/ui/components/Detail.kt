@@ -31,6 +31,7 @@ import com.vandoc.iptv.R
 import com.vandoc.iptv.data.model.local.Channel
 import com.vandoc.iptv.ui.theme.IPTVTheme
 import com.vandoc.iptv.util.DUMMY_CHANNELS
+import java.util.*
 
 /**
  * @author Ichvandi
@@ -168,7 +169,7 @@ fun StreamTab(
                         )
                         Text(
                             text = stream.status,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             color = if (stream.status == "online") Color.Green else Color.Red
                         )
                     }
@@ -180,6 +181,46 @@ fun StreamTab(
                             modifier = Modifier.align(Alignment.CenterVertically)
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun GuideTab(
+    guides: List<Channel.Guide>,
+    onGuideClicked: ((Channel.Guide) -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        items(guides) { guide ->
+            Card(
+                shape = RoundedCornerShape(8.dp),
+                elevation = 2.dp,
+                onClick = { onGuideClicked?.invoke(guide) },
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(8.dp)) {
+                    Text(
+                        text = guide.website.split(".").firstOrNull()?.replaceFirstChar {
+                            if (it.isLowerCase())
+                                it.titlecase(Locale.ROOT)
+                            else
+                                it.toString()
+                        }.orEmpty(),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = guide.language,
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         }
@@ -346,5 +387,13 @@ fun DetailTabPreview() {
 fun StreamTabPreview() {
     IPTVTheme {
         StreamTab(streams = DUMMY_CHANNELS.first().streams)
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun GuideTabPreview() {
+    IPTVTheme {
+        GuideTab(guides = DUMMY_CHANNELS.first().guides)
     }
 }

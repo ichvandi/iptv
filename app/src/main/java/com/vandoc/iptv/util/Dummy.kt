@@ -70,18 +70,18 @@ val DUMMY_CHANNELS = List(2) {
         guides = listOf(
             Channel.Guide(
                 url = "",
-                website = "",
+                website = "mncvision.id",
                 language = "English"
             ),
             Channel.Guide(
                 url = "",
-                website = "",
-                language = "English"
+                website = "mncvision.id",
+                language = "Indonesian"
             ),
             Channel.Guide(
                 url = "",
-                website = "",
-                language = "English"
+                website = "transvision.co.id",
+                language = "Indonesian"
             )
         )
     )
