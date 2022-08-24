@@ -4,7 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FilterAlt
@@ -25,12 +27,14 @@ import com.vandoc.iptv.ui.components.GridChannel
 import com.vandoc.iptv.ui.components.SearchBar
 import com.vandoc.iptv.ui.destinations.DetailScreenDestination
 import com.vandoc.iptv.util.TOOLBAR_HEIGHT_IN_DP
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 /**
  * @author Ichvandi
  * Created on 09/07/2022 at 17:07.
  */
+@OptIn(ExperimentalMaterialApi::class)
 @RootNavGraph
 @Destination
 @Composable
@@ -40,82 +44,104 @@ fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     var queryState by rememberSaveable { mutableStateOf(query) }
+    val sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
+    val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
+    val scope = rememberCoroutineScope()
     var shouldShowFAB by rememberSaveable { mutableStateOf(true) }
 
     LaunchedEffect(queryState) {
         viewModel.setAction(SearchAction.Search(queryState))
     }
 
-    Scaffold(
-        floatingActionButtonPosition = FabPosition.End,
-        floatingActionButton = {
-            AnimatedVisibility(
-                visible = shouldShowFAB,
-                enter = slideInVertically(initialOffsetY = { it }),
-                exit = slideOutVertically(targetOffsetY = { it + it / 2 })
-            ) {
-                FloatingActionButton(onClick = {
-
-                }) {
-                    Icon(imageVector = Icons.Outlined.FilterAlt, contentDescription = null)
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
+        sheetPeekHeight = 0.dp,
+        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        sheetContent = {
+            LazyColumn {
+                items(100) {
+                    Text(text = "Hello World!")
                 }
             }
         }
     ) {
-        CoordinatorLayout(
-            toolbarHeight = TOOLBAR_HEIGHT_IN_DP,
-            toolbar = { toolbarOffsetHeightPx ->
-                shouldShowFAB = toolbarOffsetHeightPx == 0f || toolbarOffsetHeightPx > -100
-
-                TopAppBar(
-                    title = {
-                        SearchBar(
-                            initialValue = queryState,
-                            hint = "Search channel name",
-                            onSearch = { queryState = it },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { navigator.navigateUp() }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_baseline_chevron_left_24),
-                                contentDescription = ""
-                            )
+        Scaffold(
+            floatingActionButtonPosition = FabPosition.End,
+            floatingActionButton = {
+                AnimatedVisibility(
+                    visible = shouldShowFAB,
+                    enter = slideInVertically(initialOffsetY = { it }),
+                    exit = slideOutVertically(targetOffsetY = { it + it / 2 })
+                ) {
+                    FloatingActionButton(onClick = {
+                        scope.launch {
+                            if (sheetState.isCollapsed) {
+                                sheetState.expand()
+                            } else {
+                                sheetState.collapse()
+                            }
                         }
-                    },
-                    modifier = Modifier
-                        .height(TOOLBAR_HEIGHT_IN_DP)
-                        .offset {
-                            IntOffset(
-                                x = 0,
-                                y = toolbarOffsetHeightPx.roundToInt()
-                            )
-                        }
-                )
-            },
-            content = {
-                if (viewModel.uiState.isLoading) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }) {
+                        Icon(imageVector = Icons.Outlined.FilterAlt, contentDescription = null)
                     }
                 }
+            }
+        ) {
+            CoordinatorLayout(
+                toolbarHeight = TOOLBAR_HEIGHT_IN_DP,
+                toolbar = { toolbarOffsetHeightPx ->
+                    shouldShowFAB = toolbarOffsetHeightPx == 0f || toolbarOffsetHeightPx > -100
 
-                if (viewModel.uiState.channels.isNotEmpty()) {
-                    GridChannel(
-                        channels = viewModel.uiState.channels,
-                        columns = GridCells.Fixed(2),
-                        onItemClicked = { navigator.navigate(DetailScreenDestination(it)) },
-                        contentPadding = PaddingValues(
-                            start = 8.dp,
-                            top = TOOLBAR_HEIGHT_IN_DP + 8.dp,
-                            end = 8.dp,
-                            bottom = 8.dp
-                        )
+                    TopAppBar(
+                        title = {
+                            SearchBar(
+                                initialValue = queryState,
+                                hint = "Search channel name",
+                                onSearch = { queryState = it },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { navigator.navigateUp() }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_baseline_chevron_left_24),
+                                    contentDescription = ""
+                                )
+                            }
+                        },
+                        modifier = Modifier
+                            .height(TOOLBAR_HEIGHT_IN_DP)
+                            .offset {
+                                IntOffset(
+                                    x = 0,
+                                    y = toolbarOffsetHeightPx.roundToInt()
+                                )
+                            }
                     )
-                }
-            },
-            modifier = Modifier.padding(it)
-        )
+                },
+                content = {
+                    if (viewModel.uiState.isLoading) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
+                    }
+
+                    if (viewModel.uiState.channels.isNotEmpty()) {
+                        GridChannel(
+                            channels = viewModel.uiState.channels,
+                            columns = GridCells.Fixed(2),
+                            onItemClicked = { navigator.navigate(DetailScreenDestination(it)) },
+                            contentPadding = PaddingValues(
+                                start = 8.dp,
+                                top = TOOLBAR_HEIGHT_IN_DP + 8.dp,
+                                end = 8.dp,
+                                bottom = 8.dp
+                            )
+                        )
+                    }
+                },
+                modifier = Modifier.padding(it)
+            )
+        }
     }
 }
