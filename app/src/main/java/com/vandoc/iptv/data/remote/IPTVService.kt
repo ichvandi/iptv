@@ -2,8 +2,10 @@ package com.vandoc.iptv.data.remote
 
 import com.vandoc.iptv.base.BaseResponse
 import com.vandoc.iptv.data.model.response.ChannelPagingResponse
+import com.vandoc.iptv.data.model.response.ChannelResponse
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.QueryMap
 
 /**
@@ -17,5 +19,11 @@ interface IPTVService {
         @QueryMap
         query: Map<String, String>
     ): Response<BaseResponse<ChannelPagingResponse>>
+
+    @GET("channels/{channel_id}")
+    suspend fun getChannelDetail(
+        @Path("channel_id")
+        channelId: String
+    ): Response<BaseResponse<ChannelResponse>>
 
 }

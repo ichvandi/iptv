@@ -18,7 +18,6 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.vandoc.iptv.data.model.local.ChannelMini
 import com.vandoc.iptv.ui.components.*
-import com.vandoc.iptv.util.DUMMY_CHANNELS
 import com.vandoc.iptv.util.getDynamicSize
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
@@ -58,6 +57,10 @@ fun DetailScreen(
     val toolbarState = rememberCollapsingToolbarScaffoldState()
     var tabItem by rememberSaveable { mutableStateOf(tabItems.first().title) }
 
+    LaunchedEffect(channel) {
+        viewModel.setAction(DetailAction.GetDetail(channel.id))
+    }
+
     CollapsingToolbarScaffold(
         modifier = Modifier.fillMaxSize(),
         state = toolbarState,
@@ -75,9 +78,9 @@ fun DetailScreen(
         Column {
             TabLayout(tabs = tabItems, onTabSelected = { _, item -> tabItem = item.title })
             when (tabItem) {
-                "Detail" -> DetailTab(channel = DUMMY_CHANNELS.first())
-                "Stream" -> StreamTab(streams = DUMMY_CHANNELS.first().streams)
-                "Guide" -> GuideTab(guides = DUMMY_CHANNELS.first().guides)
+                "Detail" -> viewModel.uiState.channel?.let { DetailTab(channel = it) }
+                "Stream" -> viewModel.uiState.channel?.streams?.let { StreamTab(streams = it) }
+                "Guide" -> viewModel.uiState.channel?.guides?.let { GuideTab(guides = it) }
             }
         }
     }

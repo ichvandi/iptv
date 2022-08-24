@@ -1,6 +1,7 @@
 package com.vandoc.iptv.data
 
 import com.vandoc.iptv.base.Resource
+import com.vandoc.iptv.data.model.local.Channel
 import com.vandoc.iptv.data.model.local.ChannelPaging
 import com.vandoc.iptv.data.model.request.SearchChannelsRequest
 import com.vandoc.iptv.data.remote.IPTVDataSource
@@ -24,6 +25,16 @@ class IPTVRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.Loading)
             dataSource.searchChannels(queries)
+                .flowOn(Dispatchers.IO)
+                .mapResource { it?.toLocalModel() }
+                .collect(::emit)
+        }
+    }
+
+    override suspend fun getChannelDetail(channelId: String): Flow<Resource<Channel?>> {
+        return flow {
+            emit(Resource.Loading)
+            dataSource.getChannelDetail(channelId)
                 .flowOn(Dispatchers.IO)
                 .mapResource { it?.toLocalModel() }
                 .collect(::emit)

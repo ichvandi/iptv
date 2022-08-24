@@ -1,6 +1,7 @@
 package com.vandoc.iptv.data
 
 import com.vandoc.iptv.base.Resource
+import com.vandoc.iptv.data.model.local.Channel
 import com.vandoc.iptv.data.model.local.ChannelPaging
 import com.vandoc.iptv.data.model.request.SearchChannelsRequest
 import kotlinx.coroutines.flow.Flow
@@ -12,5 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface IPTVRepository {
 
     suspend fun searchChannels(queries: SearchChannelsRequest): Flow<Resource<ChannelPaging?>>
+
+    suspend fun getChannelDetail(channelId: String): Flow<Resource<Channel?>>
 
 }

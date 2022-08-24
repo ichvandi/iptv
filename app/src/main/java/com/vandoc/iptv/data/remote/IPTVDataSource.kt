@@ -4,6 +4,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.vandoc.iptv.base.Resource
 import com.vandoc.iptv.data.model.request.SearchChannelsRequest
 import com.vandoc.iptv.data.model.response.ChannelPagingResponse
+import com.vandoc.iptv.data.model.response.ChannelResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
@@ -41,6 +42,23 @@ class IPTVDataSource @Inject constructor(
                     } else {
                         emit(Resource.Success(response.body()?.data))
                     }
+                } else {
+                    Timber.e(response.toString())
+                    emit(Resource.Error.Unknown("An error occurred!"))
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+                emit(Resource.Error.Unknown("An error occurred!"))
+            }
+        }
+    }
+
+    suspend fun getChannelDetail(channelId: String): Flow<Resource<ChannelResponse>> {
+        return flow {
+            try {
+                val response = service.getChannelDetail(channelId)
+                if (response.isSuccessful) {
+                    emit(Resource.Success(response.body()?.data))
                 } else {
                     Timber.e(response.toString())
                     emit(Resource.Error.Unknown("An error occurred!"))
