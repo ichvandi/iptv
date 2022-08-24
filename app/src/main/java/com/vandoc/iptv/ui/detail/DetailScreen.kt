@@ -21,6 +21,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.vandoc.iptv.data.model.local.ChannelMini
 import com.vandoc.iptv.ui.components.*
+import com.vandoc.iptv.ui.destinations.PlayerScreenDestination
 import com.vandoc.iptv.util.getDynamicSize
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
@@ -90,7 +91,12 @@ fun DetailScreen(
                     TabLayout(tabs = tabItems, onTabSelected = { _, item -> tabItem = item.title })
                     when (tabItem) {
                         "Detail" -> DetailTab(channel = it)
-                        "Stream" -> StreamTab(streams = it.streams)
+                        "Stream" -> StreamTab(
+                            streams = it.streams,
+                            onStreamClicked = { stream ->
+                                navigator.navigate(PlayerScreenDestination(stream.url))
+                            }
+                        )
                         "Guide" -> GuideTab(guides = it.guides)
                         else -> Unit
                     }

@@ -32,9 +32,9 @@ import java.util.concurrent.TimeUnit
  */
 @Composable
 fun Player(
-    streamUrls: Array<String>,
-    onStreamSuccess: () -> Unit = {},
-    onStreamFailed: () -> Unit = {},
+    streamUrl: String,
+    onStreamSuccess: (() -> Unit)? = null,
+    onStreamFailed: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -61,16 +61,12 @@ fun Player(
     val dataSourceFactory = remember { OkHttpDataSource.Factory(okHttpClient) }
     val mediaSourceFactory = remember { DefaultMediaSourceFactory(dataSourceFactory) }
 
-    val mediaItems = streamUrls.map { url ->
-        MediaItem.Builder()
-            .setUri(url)
-            .setMimeType(MimeTypes.APPLICATION_M3U8)
-            .build()
-    }
+    val mediaItem = MediaItem.Builder()
+        .setUri(streamUrl)
+        .setMimeType(MimeTypes.APPLICATION_M3U8)
+        .build()
 
-    val mediaSources = mediaItems.map { mediaItem ->
-        mediaSourceFactory.createMediaSource(mediaItem)
-    }
+    val mediaSource = mediaSourceFactory.createMediaSource(mediaItem)
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context)
@@ -87,12 +83,13 @@ fun Player(
                     override fun onPlaybackStateChanged(playbackState: Int) {
                         super.onPlaybackStateChanged(playbackState)
                         when (playbackState) {
-                            ExoPlayer.STATE_IDLE -> onStreamFailed()
-                            ExoPlayer.STATE_READY -> onStreamSuccess()
+                            ExoPlayer.STATE_IDLE -> onStreamFailed?.invoke()
+                            ExoPlayer.STATE_READY -> onStreamSuccess?.invoke()
+                            else -> Unit
                         }
                     }
                 })
-                setMediaSources(mediaSources)
+                setMediaSource(mediaSource)
                 playWhenReady = true
                 seekTo(0, 0)
                 prepare()

@@ -17,14 +17,14 @@ import com.vandoc.iptv.util.StatusBar
 @Destination
 @Composable
 fun PlayerScreen(
-    streamUrls: Array<String>,
+    streamUrl: String,
     viewModel: PlayerViewModel = hiltViewModel()
 ) {
     StatusBar(shouldShow = false)
     LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
 
     Player(
-        streamUrls = streamUrls,
+        streamUrl = streamUrl,
         onStreamSuccess = { viewModel.setAction(PlayerAction.StreamSuccess("")) },
         onStreamFailed = { viewModel.setAction(PlayerAction.StreamFailed("")) }
     )
