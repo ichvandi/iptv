@@ -18,6 +18,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -178,4 +179,34 @@ fun CustomOutlinedTextField(
             )
         }
     ))
+}
+
+data class TabItem(
+    val title: String,
+    val icon: ImageVector,
+    val selectedIcon: ImageVector
+)
+
+@Composable
+fun TabLayout(tabs: List<TabItem>, onTabSelected: (Int, TabItem) -> Unit) {
+    var tabIndex by remember { mutableStateOf(0) }
+    TabRow(selectedTabIndex = tabIndex) {
+        tabs.forEachIndexed { index, item ->
+            val selected = tabIndex == index
+            Tab(
+                selected = selected,
+                onClick = {
+                    tabIndex = index
+                    onTabSelected(index, item)
+                },
+                text = { Text(text = item.title) },
+                icon = {
+                    Icon(
+                        imageVector = if (selected) item.selectedIcon else item.icon,
+                        contentDescription = null
+                    )
+                }
+            )
+        }
+    }
 }

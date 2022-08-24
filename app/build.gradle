@@ -102,6 +102,10 @@ dependencies {
     def composeLandscapistVersion = "1.5.2"
     implementation "com.github.skydoves:landscapist-coil:$composeLandscapistVersion"
 
+    // Compose Collapsing Toolbar
+    def composeCollapsingToolbarVersion = "2.3.4"
+    implementation "me.onebone:toolbar-compose:$composeCollapsingToolbarVersion"
+
     // Compose DI
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
 
