@@ -75,7 +75,8 @@ android {
 
 dependencies {
     // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2"
+    def coroutinesVersion = "1.6.4"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
 
     // Lifecycle
     def lifecycleVersion = "2.6.0-alpha01"
