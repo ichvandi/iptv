@@ -130,7 +130,8 @@ dependencies {
     releaseImplementation "com.github.chuckerteam.chucker:library-no-op:3.5.2"
 
     // Remote Config
-    implementation 'com.google.firebase:firebase-config-ktx:21.1.0'
+    def firebaseVersion = "21.1.1"
+    implementation "com.google.firebase:firebase-config-ktx:$firebaseVersion"
 
     // LeakCanary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
