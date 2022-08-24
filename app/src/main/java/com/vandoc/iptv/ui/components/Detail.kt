@@ -1,6 +1,7 @@
 package com.vandoc.iptv.ui.components
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,17 +27,97 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.skydoves.landscapist.coil.CoilImage
 import com.vandoc.iptv.R
 import com.vandoc.iptv.data.model.local.Channel
+import com.vandoc.iptv.data.model.local.ChannelMini
 import com.vandoc.iptv.ui.theme.IPTVTheme
 import com.vandoc.iptv.util.DUMMY_CHANNELS
+import me.onebone.toolbar.CollapsingToolbarScope
 import java.util.*
 
 /**
  * @author Ichvandi
  * Created on 24/08/2022 at 13:59.
  */
+@Composable
+fun CollapsingToolbarScope.DetailToolbar(
+    channel: ChannelMini,
+    textSize: Float,
+    imageSize: Float,
+    columnPadding: Float,
+    onNavigateUp: (() -> Unit)? = null
+) {
+    Box(
+        modifier = Modifier
+            .background(
+                if (androidx.compose.material.MaterialTheme.colors.isLight)
+                    androidx.compose.material.MaterialTheme.colors.primary
+                else
+                    Color(0xFF232323)
+            )
+            .fillMaxWidth()
+            .height(100.dp)
+            .pin()
+    )
+
+    IconButton(onClick = { onNavigateUp?.invoke() }, modifier = Modifier.pin()) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_baseline_chevron_left_24),
+            tint = Color.White,
+            contentDescription = ""
+        )
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .road(Alignment.CenterStart, Alignment.CenterStart)
+            .padding(start = 60.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CoilImage(
+            imageModel = channel.logo,
+            contentScale = ContentScale.Fit,
+            placeHolder = painterResource(id = R.drawable.ic_launcher_background),
+            error = ImageBitmap.imageResource(id = R.drawable.no_image),
+            modifier = Modifier
+                .size(imageSize.dp)
+                .clip(RoundedCornerShape(8.dp))
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 68.dp)
+                .padding(
+                    start = 16.dp,
+                    top = columnPadding.dp,
+                    bottom = columnPadding.dp,
+                    end = 16.dp
+                ),
+            verticalArrangement = if (channel.isNsfw) Arrangement.SpaceBetween else Arrangement.Center
+        ) {
+            Text(
+                text = channel.name,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                fontSize = textSize.sp
+            )
+
+            if (channel.isNsfw) {
+                Image(
+                    painter = painterResource(id = R.drawable.nsfw),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .width(32.dp)
+                )
+            }
+        }
+    }
+}
+
 @Composable
 fun DetailTab(channel: Channel, modifier: Modifier = Modifier) {
     LazyColumn(
