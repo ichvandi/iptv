@@ -1,6 +1,7 @@
 package com.vandoc.iptv
 
 import android.app.Application
+import com.google.firebase.FirebaseApp
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
@@ -16,6 +17,7 @@ class MyApp : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+        FirebaseApp.initializeApp(applicationContext)
     }
 
 }
