@@ -1,11 +1,15 @@
 package com.vandoc.iptv.data.model.local
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 
 data class ChannelPaging(
     val channels: List<ChannelMini>,
     val nextCursor: String?
 )
 
+@Parcelize
 data class ChannelMini(
     val id: String,
     val name: String,
@@ -14,7 +18,7 @@ data class ChannelMini(
     val country: String,
     val flag: String,
     val categories: List<String>
-)
+) : Parcelable
 
 data class Channel(
     val id: String,

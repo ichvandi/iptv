@@ -14,6 +14,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.vandoc.iptv.ui.components.SearchBar
 import com.vandoc.iptv.ui.components.SectionChannels
+import com.vandoc.iptv.ui.destinations.DetailScreenDestination
 import com.vandoc.iptv.ui.destinations.DiscoverScreenDestination
 import com.vandoc.iptv.ui.destinations.SearchScreenDestination
 import com.vandoc.iptv.ui.discover.DiscoverArgument
@@ -54,9 +55,7 @@ fun MainScreen(
             SectionChannels(
                 section = uiState.sections.first[index].name,
                 channels = uiState.sections.first[index].channels,
-                onItemClicked = {
-//                    navigator.navigate(PlayerScreenDestination(it.url.orEmpty().toTypedArray()))
-                },
+                onItemClicked = { navigator.navigate(DetailScreenDestination(it)) },
                 onViewAllClicked = {
                     navigator.navigate(
                         DiscoverScreenDestination(
