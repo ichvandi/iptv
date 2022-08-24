@@ -57,7 +57,7 @@ val DUMMY_CHANNELS = List(2) {
                 status = "timeout",
                 width = 1920,
                 height = 1080,
-                resolution = "FHD",
+                resolution = "Unknown",
             ),
             Channel.Stream(
                 url = "",

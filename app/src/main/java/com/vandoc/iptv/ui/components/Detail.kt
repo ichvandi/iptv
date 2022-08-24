@@ -1,14 +1,15 @@
 package com.vandoc.iptv.ui.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.MaterialTheme
@@ -23,10 +24,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.skydoves.landscapist.coil.CoilImage
 import com.vandoc.iptv.R
 import com.vandoc.iptv.data.model.local.Channel
+import com.vandoc.iptv.ui.theme.IPTVTheme
+import com.vandoc.iptv.util.DUMMY_CHANNELS
 
 /**
  * @author Ichvandi
@@ -129,6 +133,55 @@ fun DetailTab(channel: Channel, modifier: Modifier = Modifier) {
                 content = channel.website,
                 titleIcon = Icons.Outlined.Language
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun StreamTab(
+    streams: List<Channel.Stream>,
+    onStreamClicked: ((Channel.Stream) -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        itemsIndexed(streams) { index, stream ->
+            Card(
+                shape = RoundedCornerShape(8.dp),
+                elevation = 2.dp,
+                onClick = { onStreamClicked?.invoke(stream) },
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .fillMaxWidth()
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Column {
+                        Text(
+                            text = "Stream ${index + 1}",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = stream.status,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (stream.status == "online") Color.Green else Color.Red
+                        )
+                    }
+
+                    if (stream.resolution != "Unknown") {
+                        Text(
+                            text = stream.resolution,
+                            style = MaterialTheme.typography.labelLarge,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -277,5 +330,21 @@ fun SectionButton(
                 }
             }
         }
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun DetailTabPreview() {
+    IPTVTheme {
+        DetailTab(channel = DUMMY_CHANNELS.first())
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun StreamTabPreview() {
+    IPTVTheme {
+        StreamTab(streams = DUMMY_CHANNELS.first().streams)
     }
 }
