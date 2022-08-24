@@ -1,5 +1,6 @@
 package com.vandoc.iptv.ui.detail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
@@ -9,8 +10,10 @@ import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LiveTv
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -75,12 +78,23 @@ fun DetailScreen(
             )
         }
     ) {
-        Column {
-            TabLayout(tabs = tabItems, onTabSelected = { _, item -> tabItem = item.title })
-            when (tabItem) {
-                "Detail" -> viewModel.uiState.channel?.let { DetailTab(channel = it) }
-                "Stream" -> viewModel.uiState.channel?.streams?.let { StreamTab(streams = it) }
-                "Guide" -> viewModel.uiState.channel?.guides?.let { GuideTab(guides = it) }
+        val isLoading = viewModel.uiState.isLoading || viewModel.uiState.channel == null
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = if (isLoading) Arrangement.Center else Arrangement.Top
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            } else {
+                viewModel.uiState.channel?.let {
+                    TabLayout(tabs = tabItems, onTabSelected = { _, item -> tabItem = item.title })
+                    when (tabItem) {
+                        "Detail" -> DetailTab(channel = it)
+                        "Stream" -> StreamTab(streams = it.streams)
+                        "Guide" -> GuideTab(guides = it.guides)
+                        else -> Unit
+                    }
+                }
             }
         }
     }
