@@ -33,6 +33,7 @@ import com.vandoc.iptv.R
 import com.vandoc.iptv.data.model.local.ChannelMini
 import com.vandoc.iptv.ui.components.*
 import com.vandoc.iptv.util.DUMMY_CHANNELS
+import com.vandoc.iptv.util.getDynamicSize
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
@@ -77,7 +78,10 @@ fun DetailScreen(
         state = toolbarState,
         scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed,
         toolbar = {
-            val textSize = (16 + (24 - 16) * toolbarState.toolbarState.progress).sp
+            val textSize = toolbarState.getDynamicSize(16, 24).sp
+            val imageSize = toolbarState.getDynamicSize(62, 68).dp
+            val columnPadding = toolbarState.getDynamicSize(16, 8).dp
+
             Box(
                 modifier = Modifier
                     .background(
@@ -112,7 +116,7 @@ fun DetailScreen(
                     placeHolder = painterResource(id = R.drawable.ic_launcher_background),
                     error = ImageBitmap.imageResource(id = R.drawable.no_image),
                     modifier = Modifier
-                        .size(68.dp)
+                        .size(imageSize)
                         .clip(RoundedCornerShape(8.dp))
                 )
 
@@ -120,7 +124,12 @@ fun DetailScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 68.dp)
-                        .padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 16.dp),
+                        .padding(
+                            start = 16.dp,
+                            top = columnPadding,
+                            bottom = columnPadding,
+                            end = 16.dp
+                        ),
                     verticalArrangement = if (channel.isNsfw) Arrangement.SpaceBetween else Arrangement.Center
                 ) {
                     Text(

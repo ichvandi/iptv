@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
+import me.onebone.toolbar.CollapsingToolbarScaffoldState
 import retrofit2.Response
 import timber.log.Timber
 import java.net.ConnectException
@@ -176,4 +177,8 @@ fun getNetworkDetails(): NetworkResponse {
             .getInputStream()
             .readBytes()
     ), NetworkResponse::class.java)
+}
+
+fun CollapsingToolbarScaffoldState.getDynamicSize(collapsedState: Int, expandedState: Int): Float {
+    return (collapsedState + (expandedState - collapsedState) * toolbarState.progress)
 }
