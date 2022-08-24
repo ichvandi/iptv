@@ -94,11 +94,13 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$composeUiVersion"
 
     // Compose Navigation
-    implementation 'io.github.raamcosta.compose-destinations:core:1.6.12-beta'
-    ksp 'io.github.raamcosta.compose-destinations:ksp:1.6.12-beta'
+    def composeNavigationVersion = "1.6.12-beta"
+    implementation "io.github.raamcosta.compose-destinations:core:$composeNavigationVersion"
+    ksp "io.github.raamcosta.compose-destinations:ksp:$composeNavigationVersion"
 
     // Compose Image Loader
-    implementation "com.github.skydoves:landscapist-coil:1.5.2"
+    def composeLandscapistVersion = "1.5.2"
+    implementation "com.github.skydoves:landscapist-coil:$composeLandscapistVersion"
 
     // Compose DI
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
