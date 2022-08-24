@@ -28,7 +28,7 @@ class DiscoverViewModel @Inject constructor(
         repository.searchChannels(query.copy(limit = 25)).collect { response ->
             when (response) {
                 is Resource.Loading -> setState {
-                    copy(isLoading = false)
+                    copy(isLoading = true)
                 }
                 is Resource.Success -> setState {
                     copy(
