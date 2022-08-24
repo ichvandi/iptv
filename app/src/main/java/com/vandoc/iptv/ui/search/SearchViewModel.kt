@@ -20,7 +20,7 @@ class SearchViewModel @Inject constructor(
 
     override fun handleAction(action: SearchAction) {
         when (action) {
-            is SearchAction.Search -> searchChannels(action.query)
+            is SearchAction.Search -> searchChannels(action.query.replace("\n", "").trim())
         }
     }
 
