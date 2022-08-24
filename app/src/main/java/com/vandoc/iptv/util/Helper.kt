@@ -3,11 +3,8 @@ package com.vandoc.iptv.util
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.res.Resources
 import android.view.Window
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
@@ -20,9 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavOptionsBuilder
 import com.google.gson.Gson
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.vandoc.iptv.BuildConfig
 import com.vandoc.iptv.base.Resource
 import com.vandoc.iptv.data.model.response.NetworkResponse
@@ -104,25 +99,6 @@ inline fun <T, R> Flow<Resource<T>>.mapResource(crossinline mapper: (value: T?) 
             Resource.Loading -> emit(Resource.Loading)
         }
     }
-
-val Int.dp: Int
-    get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
-
-fun provideDestinationNavigator(): DestinationsNavigator = object : DestinationsNavigator {
-    override fun clearBackStack(route: String): Boolean = true
-
-    override fun navigate(
-        route: String,
-        onlyIfResumed: Boolean,
-        builder: NavOptionsBuilder.() -> Unit
-    ) = Unit
-
-    override fun navigateUp(): Boolean = true
-
-    override fun popBackStack(): Boolean = true
-
-    override fun popBackStack(route: String, inclusive: Boolean, saveState: Boolean): Boolean = true
-}
 
 @Composable
 fun LockScreenOrientation(orientation: Int) {
