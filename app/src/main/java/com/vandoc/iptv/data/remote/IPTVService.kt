@@ -1,8 +1,7 @@
 package com.vandoc.iptv.data.remote
 
 import com.vandoc.iptv.base.BaseResponse
-import com.vandoc.iptv.data.model.response.ChannelPagingResponse
-import com.vandoc.iptv.data.model.response.ChannelResponse
+import com.vandoc.iptv.data.model.response.*
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -25,5 +24,20 @@ interface IPTVService {
         @Path("channel_id")
         channelId: String
     ): Response<BaseResponse<ChannelResponse>>
+
+    @GET("data/languages")
+    suspend fun getLanguages(): Response<BaseResponse<List<LanguageResponse>>>
+
+    @GET("data/categories")
+    suspend fun getCategories(): Response<BaseResponse<List<CategoryResponse>>>
+
+    @GET("data/regions")
+    suspend fun getRegions(): Response<BaseResponse<List<RegionResponse>>>
+
+    @GET("data/countries")
+    suspend fun getCountries(): Response<BaseResponse<List<CountryResponse>>>
+
+    @GET("data/subdivisions")
+    suspend fun getSubdivisions(): Response<BaseResponse<List<SubdivisionResponse>>>
 
 }

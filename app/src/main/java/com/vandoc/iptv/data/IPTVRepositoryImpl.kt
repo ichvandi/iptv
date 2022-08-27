@@ -1,8 +1,7 @@
 package com.vandoc.iptv.data
 
 import com.vandoc.iptv.base.Resource
-import com.vandoc.iptv.data.model.local.Channel
-import com.vandoc.iptv.data.model.local.ChannelPaging
+import com.vandoc.iptv.data.model.local.*
 import com.vandoc.iptv.data.model.request.SearchChannelsRequest
 import com.vandoc.iptv.data.remote.IPTVDataSource
 import com.vandoc.iptv.util.mapResource
@@ -37,6 +36,56 @@ class IPTVRepositoryImpl @Inject constructor(
             dataSource.getChannelDetail(channelId)
                 .flowOn(Dispatchers.IO)
                 .mapResource { it?.toLocalModel() }
+                .collect(::emit)
+        }
+    }
+
+    override suspend fun getLanguages(): Flow<Resource<List<Language>>> {
+        return flow {
+            emit(Resource.Loading)
+            dataSource.getLanguages()
+                .flowOn(Dispatchers.IO)
+                .mapResource { items -> items?.map { it.toLocalModel() }.orEmpty() }
+                .collect(::emit)
+        }
+    }
+
+    override suspend fun getCategories(): Flow<Resource<List<Category>>> {
+        return flow {
+            emit(Resource.Loading)
+            dataSource.getCategories()
+                .flowOn(Dispatchers.IO)
+                .mapResource { items -> items?.map { it.toLocalModel() }.orEmpty() }
+                .collect(::emit)
+        }
+    }
+
+    override suspend fun getRegions(): Flow<Resource<List<Region>>> {
+        return flow {
+            emit(Resource.Loading)
+            dataSource.getRegions()
+                .flowOn(Dispatchers.IO)
+                .mapResource { items -> items?.map { it.toLocalModel() }.orEmpty() }
+                .collect(::emit)
+        }
+    }
+
+    override suspend fun getCountries(): Flow<Resource<List<Country>>> {
+        return flow {
+            emit(Resource.Loading)
+            dataSource.getCountries()
+                .flowOn(Dispatchers.IO)
+                .mapResource { items -> items?.map { it.toLocalModel() }.orEmpty() }
+                .collect(::emit)
+        }
+    }
+
+    override suspend fun getSubdivisions(): Flow<Resource<List<Subdivision>>> {
+        return flow {
+            emit(Resource.Loading)
+            dataSource.getSubdivisions()
+                .flowOn(Dispatchers.IO)
+                .mapResource { items -> items?.map { it.toLocalModel() }.orEmpty() }
                 .collect(::emit)
         }
     }

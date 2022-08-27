@@ -3,8 +3,7 @@ package com.vandoc.iptv.data.remote
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.vandoc.iptv.base.Resource
 import com.vandoc.iptv.data.model.request.SearchChannelsRequest
-import com.vandoc.iptv.data.model.response.ChannelPagingResponse
-import com.vandoc.iptv.data.model.response.ChannelResponse
+import com.vandoc.iptv.data.model.response.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
@@ -57,6 +56,91 @@ class IPTVDataSource @Inject constructor(
         return flow {
             try {
                 val response = service.getChannelDetail(channelId)
+                if (response.isSuccessful) {
+                    emit(Resource.Success(response.body()?.data))
+                } else {
+                    Timber.e(response.toString())
+                    emit(Resource.Error.Unknown("An error occurred!"))
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+                emit(Resource.Error.Unknown("An error occurred!"))
+            }
+        }
+    }
+
+    suspend fun getLanguages(): Flow<Resource<List<LanguageResponse>>> {
+        return flow {
+            try {
+                val response = service.getLanguages()
+                if (response.isSuccessful) {
+                    emit(Resource.Success(response.body()?.data))
+                } else {
+                    Timber.e(response.toString())
+                    emit(Resource.Error.Unknown("An error occurred!"))
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+                emit(Resource.Error.Unknown("An error occurred!"))
+            }
+        }
+    }
+
+    suspend fun getCategories(): Flow<Resource<List<CategoryResponse>>> {
+        return flow {
+            try {
+                val response = service.getCategories()
+                if (response.isSuccessful) {
+                    emit(Resource.Success(response.body()?.data))
+                } else {
+                    Timber.e(response.toString())
+                    emit(Resource.Error.Unknown("An error occurred!"))
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+                emit(Resource.Error.Unknown("An error occurred!"))
+            }
+        }
+    }
+
+    suspend fun getRegions(): Flow<Resource<List<RegionResponse>>> {
+        return flow {
+            try {
+                val response = service.getRegions()
+                if (response.isSuccessful) {
+                    emit(Resource.Success(response.body()?.data))
+                } else {
+                    Timber.e(response.toString())
+                    emit(Resource.Error.Unknown("An error occurred!"))
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+                emit(Resource.Error.Unknown("An error occurred!"))
+            }
+        }
+    }
+
+    suspend fun getCountries(): Flow<Resource<List<CountryResponse>>> {
+        return flow {
+            try {
+                val response = service.getCountries()
+                if (response.isSuccessful) {
+                    emit(Resource.Success(response.body()?.data))
+                } else {
+                    Timber.e(response.toString())
+                    emit(Resource.Error.Unknown("An error occurred!"))
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+                emit(Resource.Error.Unknown("An error occurred!"))
+            }
+        }
+    }
+
+    suspend fun getSubdivisions(): Flow<Resource<List<SubdivisionResponse>>> {
+        return flow {
+            try {
+                val response = service.getSubdivisions()
                 if (response.isSuccessful) {
                     emit(Resource.Success(response.body()?.data))
                 } else {
