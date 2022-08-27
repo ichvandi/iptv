@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.vandoc.iptv.data.model.local.Language
+import com.vandoc.iptv.data.model.local.*
 
 /**
  * @author Ichvandi
@@ -14,6 +14,24 @@ import com.vandoc.iptv.data.model.local.Language
 interface DataDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCategories(categories: List<Category>): List<Long>
+
+    @Query("SELECT * FROM Category")
+    suspend fun getCategories(): List<Category>
+
+    @Query("SELECT * FROM Category WHERE LOWER(name) LIKE '%' || :query || '%'")
+    suspend fun searchCategories(query: String): List<Category>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCountries(categories: List<Country>): List<Long>
+
+    @Query("SELECT * FROM Country")
+    suspend fun getCountries(): List<Country>
+
+    @Query("SELECT * FROM Country WHERE LOWER(name) LIKE '%' || :query || '%'")
+    suspend fun searchCountries(query: String): List<Country>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLanguages(languages: List<Language>): List<Long>
 
     @Query("SELECT * FROM Language")
@@ -21,5 +39,23 @@ interface DataDao {
 
     @Query("SELECT * FROM Language WHERE LOWER(name) LIKE '%' || :query || '%'")
     suspend fun searchLanguages(query: String): List<Language>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRegions(regions: List<Region>): List<Long>
+
+    @Query("SELECT * FROM Region")
+    suspend fun getRegions(): List<Region>
+
+    @Query("SELECT * FROM Region WHERE LOWER(name) LIKE '%' || :query || '%'")
+    suspend fun searchRegions(query: String): List<Region>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSubdivisions(subdivisions: List<Subdivision>): List<Long>
+
+    @Query("SELECT * FROM Subdivision")
+    suspend fun getSubdivisions(): List<Subdivision>
+
+    @Query("SELECT * FROM Subdivision WHERE LOWER(name) LIKE '%' || :query || '%'")
+    suspend fun searchSubdivisions(query: String): List<Subdivision>
 
 }

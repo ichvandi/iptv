@@ -21,8 +21,10 @@ import com.google.gson.Gson
 import com.vandoc.iptv.BuildConfig
 import com.vandoc.iptv.base.Resource
 import com.vandoc.iptv.data.model.response.NetworkResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import me.onebone.toolbar.CollapsingToolbarScaffoldState
@@ -181,4 +183,35 @@ fun getNetworkDetails(): NetworkResponse {
 
 fun CollapsingToolbarScaffoldState.getDynamicSize(collapsedState: Int, expandedState: Int): Float {
     return (collapsedState + (expandedState - collapsedState) * toolbarState.progress)
+}
+
+fun <T, R> networkBoundResource(
+    onQuery: (suspend () -> R)? = null,
+    onFetch: (suspend () -> Flow<Resource<T>>)? = null,
+    onMapping: ((T?) -> R?)? = null,
+    onResult: (suspend (Resource<R?>) -> Unit)? = null
+): Flow<Resource<R>> {
+    return flow {
+        emit(Resource.Loading)
+
+        val local = onQuery?.invoke()
+        if (local != null) {
+            if (local is List<*> && local.isNotEmpty()) {
+                emit(Resource.Success(local))
+                return@flow
+            }
+
+            if (local !is List<*>) {
+                emit(Resource.Success(local))
+                return@flow
+            }
+        }
+
+        onFetch?.invoke()
+            ?.flowOn(Dispatchers.IO)
+            ?.mapResource { onMapping?.invoke(it) }
+            ?.collect { onResult?.invoke(it) }
+
+        emit(Resource.Success(onQuery?.invoke()))
+    }
 }
