@@ -3,11 +3,6 @@ package com.vandoc.iptv.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
-import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
-import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.vandoc.iptv.data.local.DataDao
@@ -17,7 +12,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
 /**
@@ -29,24 +23,13 @@ import javax.inject.Singleton
 object MainModule {
 
     @Provides
-    fun provideRemoteConfig(@ApplicationContext context: Context): FirebaseRemoteConfig {
-        FirebaseApp.initializeApp(context)
+    fun provideRemoteConfig(): FirebaseRemoteConfig {
         val instance = FirebaseRemoteConfig.getInstance()
         val config = FirebaseRemoteConfigSettings.Builder()
             .setMinimumFetchIntervalInSeconds(60 * 10) // 15 Minute
             .build()
         instance.setConfigSettingsAsync(config)
         return instance
-    }
-
-    @Provides
-    fun provideDataSourceFactory(okHttpClient: OkHttpClient): DataSource.Factory {
-        return OkHttpDataSource.Factory(okHttpClient)
-    }
-
-    @Provides
-    fun provideMediaSourceFactory(dataSourceFactory: DataSource.Factory): MediaSource.Factory {
-        return DefaultMediaSourceFactory(dataSourceFactory)
     }
 
     @Provides
