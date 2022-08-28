@@ -396,6 +396,7 @@ fun SectionList(
                         Text(
                             text = content,
                             style = MaterialTheme.typography.titleMedium,
+                            color = Color.White,
                             modifier = Modifier
                                 .padding(horizontal = 4.dp)
                                 .background(

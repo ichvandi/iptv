@@ -1,6 +1,6 @@
 package com.vandoc.iptv.ui.search
 
-import com.vandoc.iptv.data.model.local.ChannelMini
+import com.vandoc.iptv.data.model.local.*
 
 /**
  * @author Ichvandi
@@ -13,7 +13,12 @@ sealed class SearchAction {
 data class SearchState(
     val isLoading: Boolean = false,
     val errorMessage: String = "",
-    val channels: List<ChannelMini> = emptyList()
+    val channels: List<ChannelMini> = emptyList(),
+    val languageFilter: List<Language> = emptyList(),
+    val categoryFilter: List<Category> = emptyList(),
+    val regionFilter: List<Region> = emptyList(),
+    val countryFilter: List<Country> = emptyList(),
+    val subdivisionFilter: List<Subdivision> = emptyList(),
 )
 
 sealed class SearchEvent {
