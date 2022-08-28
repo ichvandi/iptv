@@ -1,11 +1,13 @@
 package com.vandoc.iptv.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.upstream.DataSource
+import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.vandoc.iptv.data.local.DataDao
@@ -27,7 +29,8 @@ import javax.inject.Singleton
 object MainModule {
 
     @Provides
-    fun provideRemoteConfig(): FirebaseRemoteConfig {
+    fun provideRemoteConfig(@ApplicationContext context: Context): FirebaseRemoteConfig {
+        FirebaseApp.initializeApp(context)
         val instance = FirebaseRemoteConfig.getInstance()
         val config = FirebaseRemoteConfigSettings.Builder()
             .setMinimumFetchIntervalInSeconds(60 * 10) // 15 Minute
@@ -59,6 +62,12 @@ object MainModule {
     @Singleton
     fun providesDao(database: IPTVDatabase): DataDao {
         return database.dataDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providesSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("iptv_pref", Context.MODE_PRIVATE)
     }
 
 }

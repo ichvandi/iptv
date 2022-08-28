@@ -145,6 +145,14 @@ dependencies {
     ksp "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
 
+    // Work Manager
+    def workVersion = "2.7.1"
+    implementation "androidx.work:work-runtime-ktx:$workVersion"
+
+    // Work Manager DI
+    implementation 'androidx.hilt:hilt-work:1.0.0'
+    kapt 'androidx.hilt:hilt-compiler:1.0.0'
+
     // LeakCanary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 
