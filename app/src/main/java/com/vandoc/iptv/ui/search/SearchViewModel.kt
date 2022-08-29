@@ -30,16 +30,25 @@ class SearchViewModel @Inject constructor(
     override fun handleAction(action: SearchAction) {
         when (action) {
             is SearchAction.Search -> searchChannels(action.query.replace("\n", "").trim())
+            is SearchAction.Filter -> filterChannels(
+                action.languageIndex,
+                action.categoryIndex,
+                action.regionIndex,
+                action.countryIndex,
+                action.subdivisionIndex
+            )
         }
     }
 
     private fun searchChannels(query: String) = viewModelScope.launch {
-        repository.searchChannels(
-            SearchChannelsRequest(
-                name = query,
-                limit = 25
-            )
-        ).collect { response ->
+        val request = SearchChannelsRequest(
+            name = query,
+            limit = 25
+        )
+
+        setState { copy(request = request) }
+
+        repository.searchChannels(request).collect { response ->
             when (response) {
                 is Resource.Loading -> setState {
                     copy(isLoading = true)
@@ -61,6 +70,29 @@ class SearchViewModel @Inject constructor(
                     }
                 }
                 else -> Unit
+            }
+        }
+    }
+
+    private fun filterChannels(
+        languageIndex: Int?,
+        categoryIndex: Int?,
+        regionIndex: Int?,
+        countryIndex: Int?,
+        subdivisionIndex: Int?
+    ) = viewModelScope.launch(appDispatcher.main) {
+        val request = uiState.request?.copy(
+            language = if (languageIndex != null) uiState.languageFilter[languageIndex].id else null,
+            category = if (categoryIndex != null) uiState.categoryFilter[categoryIndex].id else null,
+            region = if (regionIndex != null) uiState.regionFilter[regionIndex].id else null,
+            country = if (countryIndex != null) uiState.countryFilter[countryIndex].id else null,
+            subdivision = if (subdivisionIndex != null) uiState.subdivisionFilter[subdivisionIndex].id else null
+        ) ?: return@launch
+
+        repository.searchChannels(request).collect { response ->
+            setState { copy(isLoading = response == Resource.Loading) }
+            if (response is Resource.Success) {
+                setState { copy(channels = response.data?.channels.orEmpty()) }
             }
         }
     }

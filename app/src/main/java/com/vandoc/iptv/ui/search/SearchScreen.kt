@@ -51,7 +51,6 @@ fun SearchScreen(
     navigator: DestinationsNavigator,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
-    var queryState by rememberSaveable { mutableStateOf(query) }
     var shouldShowFAB by rememberSaveable { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
@@ -67,9 +66,20 @@ fun SearchScreen(
     var selectedRegionIndex by rememberSaveable { mutableStateOf<Int?>(null) }
     var selectedCountryIndex by rememberSaveable { mutableStateOf<Int?>(null) }
     var selectedSubdivisionIndex by rememberSaveable { mutableStateOf<Int?>(null) }
+    val hasFilter by remember {
+        derivedStateOf {
+            selectedLanguageIndex != null ||
+                    selectedCategoryIndex != null ||
+                    selectedRegionIndex != null ||
+                    selectedCountryIndex != null ||
+                    selectedSubdivisionIndex != null
+        }
+    }
 
-    LaunchedEffect(queryState) {
-        viewModel.setAction(SearchAction.Search(queryState))
+    LaunchedEffect(query) {
+        if (viewModel.uiState.request == null) {
+            viewModel.setAction(SearchAction.Search(query))
+        }
     }
 
     ModalBottomSheetLayout(
@@ -83,9 +93,16 @@ fun SearchScreen(
                     .padding(top = 16.dp, bottom = 8.dp)
                     .size(width = 52.dp, height = 6.dp)
                     .background(
-                        color = Color.Yellow,
+                        color = if (MaterialTheme.colors.isLight) Color(0xFF232323) else MaterialTheme.colors.surface,
                         shape = CircleShape
                     )
+            )
+            Text(
+                text = "Search",
+                style = MaterialTheme3.typography.titleLarge,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 16.dp)
             )
         }
     ) {
@@ -178,9 +195,26 @@ fun SearchScreen(
                         )
                     }
                 }
-                Button(onClick = {}, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)) {
+                Button(
+                    onClick = {
+                        scope.launch {
+                            viewModel.setAction(
+                                SearchAction.Filter(
+                                    selectedLanguageIndex,
+                                    selectedCategoryIndex,
+                                    selectedRegionIndex,
+                                    selectedCountryIndex,
+                                    selectedSubdivisionIndex
+                                )
+                            )
+                            sheetState.hide()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    enabled = hasFilter
+                ) {
                     Text(text = "Filter")
                 }
             }
@@ -215,9 +249,11 @@ fun SearchScreen(
                         TopAppBar(
                             title = {
                                 SearchBar(
-                                    initialValue = queryState,
+                                    initialValue = query,
                                     hint = "Search channel name",
-                                    onSearch = { queryState = it },
+                                    onSearch = { query ->
+                                        viewModel.setAction(SearchAction.Search(query))
+                                    },
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             },
