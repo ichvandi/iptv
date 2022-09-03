@@ -224,6 +224,16 @@ fun SearchScreen(
                 currentRegionIndex = selectedRegionIndex
                 currentCountryIndex = selectedCountryIndex
                 currentSubdivisionIndex = selectedSubdivisionIndex
+
+                viewModel.setAction(
+                    SearchAction.Filter(
+                        currentLanguageIndex,
+                        currentCategoryIndex,
+                        currentRegionIndex,
+                        currentCountryIndex,
+                        currentSubdivisionIndex
+                    )
+                )
             }
         ) {
             Scaffold(
