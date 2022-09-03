@@ -230,3 +230,12 @@ fun <T> debounce(
         debounceJob
     }
 }
+
+fun <T> List<T>.moveToFirst(item: T): List<T> {
+    if (isEmpty()) return emptyList()
+    if (!contains(item)) return this
+    return this.toMutableList().apply {
+        remove(item)
+        add(0, item)
+    }
+}

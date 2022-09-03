@@ -69,28 +69,36 @@ fun SearchScreen(
 
     val filterSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true,
-        confirmStateChange = {
-            selectedLanguageIndex = currentLanguageIndex
-            selectedCategoryIndex = currentCategoryIndex
-            selectedRegionIndex = currentRegionIndex
-            selectedCountryIndex = currentCountryIndex
-            selectedSubdivisionIndex = currentSubdivisionIndex
-            true
-        }
+        skipHalfExpanded = true
     )
+
+    LaunchedEffect(filterSheetState) {
+        snapshotFlow { filterSheetState.isVisible }.collect { isVisible ->
+            if (!isVisible) {
+                selectedLanguageIndex = currentLanguageIndex
+                selectedCategoryIndex = currentCategoryIndex
+                selectedRegionIndex = currentRegionIndex
+                selectedCountryIndex = currentCountryIndex
+                selectedSubdivisionIndex = currentSubdivisionIndex
+            }
+        }
+    }
 
     var searchTitle by rememberSaveable { mutableStateOf("") }
     var selectedSearch by rememberSaveable { mutableStateOf<Any?>(null) }
 
     val searchFilterState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true,
-        confirmStateChange = {
-            selectedSearch = null
-            true
-        }
+        skipHalfExpanded = true
     )
+
+    LaunchedEffect(searchFilterState) {
+        snapshotFlow { searchFilterState.isVisible }.collect { isVisible ->
+            if (!isVisible) {
+                selectedSearch = null
+            }
+        }
+    }
 
     LaunchedEffect(query) {
         if (viewModel.uiState.request == null) {
@@ -108,7 +116,20 @@ fun SearchScreen(
         onTextChanged = { viewModel.setAction(SearchAction.SearchFilter(it, searchTitle)) },
         onItemSelected = { selectedSearch = if (it != selectedSearch) it else null },
         onBackClicked = { selectedSearch = null },
-        onSelectClicked = { selectedSearch = null }
+        onSelectClicked = {
+            viewModel.setAction(SearchAction.SearchSelect(selectedSearch, searchTitle))
+
+            when (searchTitle) {
+                "Languages" -> selectedLanguageIndex = 0
+                "Categories" -> selectedCategoryIndex = 0
+                "Regions" -> selectedRegionIndex = 0
+                "Countries" -> selectedCountryIndex = 0
+                "Subdivisions" -> selectedSubdivisionIndex = 0
+            }
+
+            selectedSearch = null
+            searchTitle = ""
+        }
     ) {
         FilterModalBottomSheet(
             languages = Pair(viewModel.uiState.languageFilter, selectedLanguageIndex),
@@ -127,6 +148,9 @@ fun SearchScreen(
             onViewAllLanguageClicked = {
                 scope.launch {
                     searchTitle = "Languages"
+                    selectedLanguageIndex?.let {
+                        selectedSearch = viewModel.uiState.languageFilter[it]
+                    }
                     viewModel.setAction(SearchAction.SearchFilter("", searchTitle))
                     searchFilterState.show()
                 }
@@ -138,6 +162,9 @@ fun SearchScreen(
             onViewAllCategoryClicked = {
                 scope.launch {
                     searchTitle = "Categories"
+                    selectedCategoryIndex?.let {
+                        selectedSearch = viewModel.uiState.categoryFilter[it]
+                    }
                     viewModel.setAction(SearchAction.SearchFilter("", searchTitle))
                     searchFilterState.show()
                 }
@@ -149,6 +176,9 @@ fun SearchScreen(
             onViewAllRegionClicked = {
                 scope.launch {
                     searchTitle = "Regions"
+                    selectedRegionIndex?.let {
+                        selectedSearch = viewModel.uiState.regionFilter[it]
+                    }
                     viewModel.setAction(SearchAction.SearchFilter("", searchTitle))
                     searchFilterState.show()
                 }
@@ -160,6 +190,9 @@ fun SearchScreen(
             onViewAllCountryClicked = {
                 scope.launch {
                     searchTitle = "Countries"
+                    selectedCountryIndex?.let {
+                        selectedSearch = viewModel.uiState.countryFilter[it]
+                    }
                     viewModel.setAction(SearchAction.SearchFilter("", searchTitle))
                     searchFilterState.show()
                 }
@@ -171,6 +204,9 @@ fun SearchScreen(
             onViewAllSubdivisionClicked = {
                 scope.launch {
                     searchTitle = "Subdivisions"
+                    selectedSubdivisionIndex?.let {
+                        selectedSearch = viewModel.uiState.subdivisionFilter[it]
+                    }
                     viewModel.setAction(SearchAction.SearchFilter("", searchTitle))
                     searchFilterState.show()
                 }

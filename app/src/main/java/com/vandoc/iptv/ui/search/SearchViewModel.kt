@@ -7,6 +7,7 @@ import com.vandoc.iptv.base.Resource
 import com.vandoc.iptv.data.IPTVRepository
 import com.vandoc.iptv.data.model.local.*
 import com.vandoc.iptv.data.model.request.SearchChannelsRequest
+import com.vandoc.iptv.util.moveToFirst
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.toList
@@ -43,6 +44,26 @@ class SearchViewModel @Inject constructor(
                 "Regions" -> searchRegions(action.query)
                 "Countries" -> searchCountries(action.query)
                 "Subdivisions" -> searchSubdivisions(action.query)
+            }
+            is SearchAction.SearchSelect -> {
+                if (action.item == null) return
+                when (action.type) {
+                    "Languages" -> setState {
+                        copy(languageFilter = languageFilter.moveToFirst(action.item as Language))
+                    }
+                    "Categories" -> setState {
+                        copy(categoryFilter = categoryFilter.moveToFirst(action.item as Category))
+                    }
+                    "Regions" -> setState {
+                        copy(regionFilter = regionFilter.moveToFirst(action.item as Region))
+                    }
+                    "Countries" -> setState {
+                        copy(countryFilter = countryFilter.moveToFirst(action.item as Country))
+                    }
+                    "Subdivisions" -> setState {
+                        copy(subdivisionFilter = subdivisionFilter.moveToFirst(action.item as Subdivision))
+                    }
+                }
             }
         }
     }

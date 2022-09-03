@@ -18,6 +18,7 @@ sealed class SearchAction {
     ) : SearchAction()
 
     data class SearchFilter(val query: String, val type: String) : SearchAction()
+    data class SearchSelect(val item: Any?, val type: String) : SearchAction()
 }
 
 data class SearchState(
