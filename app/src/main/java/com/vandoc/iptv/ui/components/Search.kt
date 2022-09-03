@@ -12,20 +12,20 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Category
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Public
-import androidx.compose.material.icons.outlined.Translate
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.vandoc.iptv.data.model.local.*
 import com.vandoc.iptv.ui.theme.IPTVTheme
+import com.vandoc.iptv.util.debounce
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.material3.MaterialTheme as MaterialTheme3
@@ -131,11 +131,12 @@ fun FilterModalBottomSheet(
     hasFilter: Boolean,
     sheetState: ModalBottomSheetState,
     coroutineScope: CoroutineScope,
+    shouldEnableBackHandler: Boolean = false,
     onBackClicked: (() -> Unit)? = null,
     onFilterClicked: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
-    BackHandler(enabled = sheetState.isVisible) {
+    BackHandler(enabled = shouldEnableBackHandler) {
         coroutineScope.launch {
             sheetState.hide()
             onBackClicked?.invoke()
@@ -223,6 +224,112 @@ fun FilterModalBottomSheet(
             enabled = hasFilter
         ) {
             Text(text = "Filter")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun SearchFilterModalBottomSheet(
+    modifier: Modifier = Modifier,
+    title: String,
+    items: List<Any>,
+    selectedItem: Any?,
+    sheetState: ModalBottomSheetState,
+    coroutineScope: CoroutineScope,
+    shouldEnableBackHandler: Boolean = false,
+    onTextChanged: ((String) -> Unit)? = null,
+    onItemSelected: ((Any) -> Unit)? = null,
+    onBackClicked: (() -> Unit)? = null,
+    onSelectClicked: (() -> Unit)? = null,
+    content: @Composable () -> Unit
+) {
+    val debounceSearch = debounce<String>(500, coroutineScope) { onTextChanged?.invoke(it) }
+    val focusManager = LocalFocusManager.current
+
+    BackHandler(enabled = shouldEnableBackHandler) {
+        coroutineScope.launch {
+            sheetState.hide()
+            onBackClicked?.invoke()
+        }
+    }
+
+    BaseModalBottomSheet(
+        title = title,
+        sheetState = sheetState,
+        content = content,
+        modifier = modifier
+    ) {
+        SearchBar(
+            hint = "Search",
+            onTextChanged = {
+                debounceSearch(it)
+            },
+            onSearch = {
+                focusManager.clearFocus()
+            },
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+        ) {
+            itemsIndexed(items) { index, item ->
+                val name = when (item) {
+                    is Language -> item.name
+                    is Category -> item.name
+                    is Region -> item.name
+                    is Country -> item.name
+                    is Subdivision -> item.name
+                    else -> ""
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = name,
+                        style = MaterialTheme3.typography.bodyLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onItemSelected?.invoke(item) }
+                            .padding(vertical = 8.dp)
+                            .weight(1f)
+                    )
+                    if (selectedItem == item) {
+                        Icon(
+                            imageVector = Icons.Outlined.CheckCircle,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+                if (index < items.lastIndex) {
+                    Divider(
+                        color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
+            }
+        }
+        Button(
+            onClick = {
+                coroutineScope.launch {
+                    sheetState.hide()
+                    onSelectClicked?.invoke()
+                }
+            },
+            enabled = selectedItem != null,
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Text(text = "Select")
         }
     }
 }

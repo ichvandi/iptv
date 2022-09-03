@@ -3,6 +3,7 @@ package com.vandoc.iptv.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -13,8 +14,10 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.takeOrElse
@@ -74,6 +77,7 @@ fun CoordinatorLayout(
 fun SearchBar(
     initialValue: String = "",
     hint: String = "",
+    onTextChanged: ((String) -> Unit)? = null,
     onSearch: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -82,7 +86,10 @@ fun SearchBar(
 
     CustomOutlinedTextField(
         value = textValue,
-        onValueChange = { textValue = it },
+        onValueChange = {
+            textValue = it
+            onTextChanged?.invoke(it)
+        },
         textStyle = MaterialTheme.typography.bodyLarge,
         placeholder = { Text(text = hint) },
         leadingIcon = { Icon(imageVector = Icons.Outlined.Search, contentDescription = "") },

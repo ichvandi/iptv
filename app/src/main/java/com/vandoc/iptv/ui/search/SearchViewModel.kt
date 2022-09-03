@@ -37,6 +37,13 @@ class SearchViewModel @Inject constructor(
                 action.countryIndex,
                 action.subdivisionIndex
             )
+            is SearchAction.SearchFilter -> when (action.type) {
+                "Languages" -> searchLanguages(action.query)
+                "Categories" -> searchCategories(action.query)
+                "Regions" -> searchRegions(action.query)
+                "Countries" -> searchCountries(action.query)
+                "Subdivisions" -> searchSubdivisions(action.query)
+            }
         }
     }
 
@@ -148,6 +155,51 @@ class SearchViewModel @Inject constructor(
                 countryFilter = countries,
                 subdivisionFilter = subdivisions
             )
+        }
+    }
+
+    private fun searchLanguages(query: String) = viewModelScope.launch(appDispatcher.main) {
+        repository.searchLanguages(query).collect { response ->
+            setState { copy(isLoading = response is Resource.Loading) }
+            if (response is Resource.Success) {
+                setState { copy(searchFilters = response.data.orEmpty()) }
+            }
+        }
+    }
+
+    private fun searchCategories(query: String) = viewModelScope.launch(appDispatcher.main) {
+        repository.searchCategories(query).collect { response ->
+            setState { copy(isLoading = response is Resource.Loading) }
+            if (response is Resource.Success) {
+                setState { copy(searchFilters = response.data.orEmpty()) }
+            }
+        }
+    }
+
+    private fun searchRegions(query: String) = viewModelScope.launch(appDispatcher.main) {
+        repository.searchRegions(query).collect { response ->
+            setState { copy(isLoading = response is Resource.Loading) }
+            if (response is Resource.Success) {
+                setState { copy(searchFilters = response.data.orEmpty()) }
+            }
+        }
+    }
+
+    private fun searchCountries(query: String) = viewModelScope.launch(appDispatcher.main) {
+        repository.searchCountries(query).collect { response ->
+            setState { copy(isLoading = response is Resource.Loading) }
+            if (response is Resource.Success) {
+                setState { copy(searchFilters = response.data.orEmpty()) }
+            }
+        }
+    }
+
+    private fun searchSubdivisions(query: String) = viewModelScope.launch(appDispatcher.main) {
+        repository.searchSubdivisions(query).collect { response ->
+            setState { copy(isLoading = response is Resource.Loading) }
+            if (response is Resource.Success) {
+                setState { copy(searchFilters = response.data.orEmpty()) }
+            }
         }
     }
 

@@ -1,27 +1,18 @@
 package com.vandoc.iptv.ui.search
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,15 +20,11 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.vandoc.iptv.R
-import com.vandoc.iptv.ui.components.CoordinatorLayout
-import com.vandoc.iptv.ui.components.FilterModalBottomSheet
-import com.vandoc.iptv.ui.components.GridChannel
-import com.vandoc.iptv.ui.components.SearchBar
+import com.vandoc.iptv.ui.components.*
 import com.vandoc.iptv.ui.destinations.DetailScreenDestination
 import com.vandoc.iptv.util.TOOLBAR_HEIGHT_IN_DP
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-import androidx.compose.material3.MaterialTheme as MaterialTheme3
 
 /**
  * @author Ichvandi
@@ -91,7 +78,19 @@ fun SearchScreen(
             selectedSubdivisionIndex = currentSubdivisionIndex
             true
         }
-    }
+    )
+
+    var searchTitle by rememberSaveable { mutableStateOf("") }
+    var selectedSearch by rememberSaveable { mutableStateOf<Any?>(null) }
+
+    val searchFilterState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true,
+        confirmStateChange = {
+            selectedSearch = null
+            true
+        }
+    )
 
     LaunchedEffect(query) {
         if (viewModel.uiState.request == null) {
@@ -99,79 +98,17 @@ fun SearchScreen(
         }
     }
 
-    ModalBottomSheetLayout(
+    SearchFilterModalBottomSheet(
+        title = searchTitle,
+        items = viewModel.uiState.searchFilters,
+        selectedItem = selectedSearch,
         sheetState = searchFilterState,
-        sheetElevation = 8.dp,
-        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-        sheetContent = {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 16.dp, bottom = 8.dp)
-                    .size(width = 52.dp, height = 6.dp)
-                    .background(
-                        color = if (MaterialTheme.colors.isLight) Color(0xFF232323) else MaterialTheme.colors.surface,
-                        shape = CircleShape
-                    )
-            )
-            Text(
-                text = "Search",
-                style = MaterialTheme3.typography.titleLarge,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(bottom = 16.dp)
-            )
-            SearchBar(
-                hint = "Search",
-                onSearch = {
-                    viewModel.setAction(SearchAction.SearchFilter(it, "language"))
-                },
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-            ) {
-                itemsIndexed(viewModel.uiState.languageFilter) { index, item ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = item.name,
-                            style = MaterialTheme3.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                                .weight(1f)
-                        )
-                        Icon(
-                            imageVector = Icons.Outlined.CheckCircle,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    if (index < viewModel.uiState.languageFilter.lastIndex) {
-                        Divider(
-                            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        )
-                    }
-                }
-            }
-            Button(
-                onClick = {},
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(text = "Select")
-            }
-        }
+        coroutineScope = scope,
+        shouldEnableBackHandler = searchFilterState.isVisible,
+        onTextChanged = { viewModel.setAction(SearchAction.SearchFilter(it, searchTitle)) },
+        onItemSelected = { selectedSearch = if (it != selectedSearch) it else null },
+        onBackClicked = { selectedSearch = null },
+        onSelectClicked = { selectedSearch = null }
     ) {
         FilterModalBottomSheet(
             languages = Pair(viewModel.uiState.languageFilter, selectedLanguageIndex),
@@ -182,25 +119,61 @@ fun SearchScreen(
             hasFilter = hasFilter,
             sheetState = filterSheetState,
             coroutineScope = scope,
+            shouldEnableBackHandler = filterSheetState.isVisible && !searchFilterState.isVisible,
             onLanguageClicked = { index, _ ->
                 selectedLanguageIndex =
                     if (selectedLanguageIndex == index) null else index
+            },
+            onViewAllLanguageClicked = {
+                scope.launch {
+                    searchTitle = "Languages"
+                    viewModel.setAction(SearchAction.SearchFilter("", searchTitle))
+                    searchFilterState.show()
+                }
             },
             onCategoryClicked = { index, _ ->
                 selectedCategoryIndex =
                     if (selectedCategoryIndex == index) null else index
             },
+            onViewAllCategoryClicked = {
+                scope.launch {
+                    searchTitle = "Categories"
+                    viewModel.setAction(SearchAction.SearchFilter("", searchTitle))
+                    searchFilterState.show()
+                }
+            },
             onRegionClicked = { index, _ ->
                 selectedRegionIndex =
                     if (selectedRegionIndex == index) null else index
+            },
+            onViewAllRegionClicked = {
+                scope.launch {
+                    searchTitle = "Regions"
+                    viewModel.setAction(SearchAction.SearchFilter("", searchTitle))
+                    searchFilterState.show()
+                }
             },
             onCountryClicked = { index, _ ->
                 selectedCountryIndex =
                     if (selectedCountryIndex == index) null else index
             },
+            onViewAllCountryClicked = {
+                scope.launch {
+                    searchTitle = "Countries"
+                    viewModel.setAction(SearchAction.SearchFilter("", searchTitle))
+                    searchFilterState.show()
+                }
+            },
             onSubdivisionClicked = { index, _ ->
                 selectedSubdivisionIndex =
                     if (selectedSubdivisionIndex == index) null else index
+            },
+            onViewAllSubdivisionClicked = {
+                scope.launch {
+                    searchTitle = "Subdivisions"
+                    viewModel.setAction(SearchAction.SearchFilter("", searchTitle))
+                    searchFilterState.show()
+                }
             },
             onBackClicked = {
                 selectedLanguageIndex = currentLanguageIndex

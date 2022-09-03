@@ -16,6 +16,8 @@ sealed class SearchAction {
         val countryIndex: Int?,
         val subdivisionIndex: Int?
     ) : SearchAction()
+
+    data class SearchFilter(val query: String, val type: String) : SearchAction()
 }
 
 data class SearchState(
@@ -28,6 +30,7 @@ data class SearchState(
     val regionFilter: List<Region> = emptyList(),
     val countryFilter: List<Country> = emptyList(),
     val subdivisionFilter: List<Subdivision> = emptyList(),
+    val searchFilters: List<Any> = emptyList()
 )
 
 sealed class SearchEvent {

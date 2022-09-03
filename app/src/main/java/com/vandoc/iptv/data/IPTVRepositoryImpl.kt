@@ -56,6 +56,14 @@ class IPTVRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun searchLanguages(query: String): Flow<Resource<List<Language>>> {
+        return flow {
+            emit(Resource.Loading)
+            val result = dao.searchLanguages(query)
+            emit(Resource.Success(result))
+        }
+    }
+
     override suspend fun getCategories(): Flow<Resource<List<Category>>> {
         return networkBoundResource(
             onQuery = { dao.getCategories() },
@@ -67,6 +75,14 @@ class IPTVRepositoryImpl @Inject constructor(
                 }
             }
         )
+    }
+
+    override suspend fun searchCategories(query: String): Flow<Resource<List<Category>>> {
+        return flow {
+            emit(Resource.Loading)
+            val result = dao.searchCategories(query)
+            emit(Resource.Success(result))
+        }
     }
 
     override suspend fun getRegions(): Flow<Resource<List<Region>>> {
@@ -82,6 +98,14 @@ class IPTVRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun searchRegions(query: String): Flow<Resource<List<Region>>> {
+        return flow {
+            emit(Resource.Loading)
+            val result = dao.searchRegions(query)
+            emit(Resource.Success(result))
+        }
+    }
+
     override suspend fun getCountries(): Flow<Resource<List<Country>>> {
         return networkBoundResource(
             onQuery = { dao.getCountries() },
@@ -95,6 +119,14 @@ class IPTVRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun searchCountries(query: String): Flow<Resource<List<Country>>> {
+        return flow {
+            emit(Resource.Loading)
+            val result = dao.searchCountries(query)
+            emit(Resource.Success(result))
+        }
+    }
+
     override suspend fun getSubdivisions(): Flow<Resource<List<Subdivision>>> {
         return networkBoundResource(
             onQuery = { dao.getSubdivisions() },
@@ -106,6 +138,14 @@ class IPTVRepositoryImpl @Inject constructor(
                 }
             }
         )
+    }
+
+    override suspend fun searchSubdivisions(query: String): Flow<Resource<List<Subdivision>>> {
+        return flow {
+            emit(Resource.Loading)
+            val result = dao.searchSubdivisions(query)
+            emit(Resource.Success(result))
+        }
     }
 
 }

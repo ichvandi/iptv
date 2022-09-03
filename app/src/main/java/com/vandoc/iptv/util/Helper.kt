@@ -21,12 +21,11 @@ import com.google.gson.Gson
 import com.vandoc.iptv.BuildConfig
 import com.vandoc.iptv.base.Resource
 import com.vandoc.iptv.data.model.response.NetworkResponse
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.launch
 import me.onebone.toolbar.CollapsingToolbarScaffoldState
 import retrofit2.Response
 import timber.log.Timber
@@ -213,5 +212,21 @@ fun <T, R> networkBoundResource(
             ?.collect { onResult?.invoke(it) }
 
         emit(Resource.Success(onQuery?.invoke()))
+    }
+}
+
+fun <T> debounce(
+    waitMs: Long = 300L,
+    scope: CoroutineScope,
+    onDebounce: ((T) -> Unit)? = null,
+): (T) -> Job? {
+    var debounceJob: Job? = null
+    return { param: T ->
+        debounceJob?.cancel()
+        debounceJob = scope.launch {
+            delay(waitMs)
+            onDebounce?.invoke(param)
+        }
+        debounceJob
     }
 }
