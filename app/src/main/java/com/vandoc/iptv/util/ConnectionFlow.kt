@@ -1,77 +1,76 @@
 package com.vandoc.iptv.util
 
+import android.app.Activity
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.Network
+import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
-import android.util.Log
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.channelFlow
-import timber.log.Timber
-import java.net.InetAddress
-import java.net.UnknownHostException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import java.io.IOException
+import java.net.InetSocketAddress
+import javax.net.SocketFactory
 
 /**
  * @author Achmad Ichsan
- * @version ConnectionFlow, v 0.1 11/07/22 13.49 by Achmad Ichsan
+ * @version ConnectionFlow, v 0.2 03/09/22 21.00 by Ichvandi
  */
-class ConnectionFlow(context: Context) {
+fun Context.monitorNetwork(): Flow<Boolean>? = findActivity()?.monitorNetwork()
 
-    private val connectivityManager =
-        context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+fun Activity.monitorNetwork(): Flow<Boolean> = callbackFlow {
+    val connectivityManager: ConnectivityManager =
+        applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    private val connectionFlow = channelFlow {
-        val networkCallback = object : ConnectivityManager.NetworkCallback() {
-            override fun onLost(network: Network) {
+    val networkRequest = NetworkRequest.Builder()
+        .addCapability(NET_CAPABILITY_INTERNET)
+        .build()
+
+    val networkCallback = object : ConnectivityManager.NetworkCallback() {
+        override fun onCapabilitiesChanged(
+            network: Network,
+            networkCapabilities: NetworkCapabilities
+        ) {
+            super.onCapabilitiesChanged(network, networkCapabilities)
+            val hasInternetCapability = networkCapabilities.hasCapability(
+                NET_CAPABILITY_INTERNET
+            )
+
+            if (!hasInternetCapability) {
                 trySend(false)
+                return
             }
 
-            override fun onAvailable(network: Network) {
-                trySend(true)
-            }
-
-            override fun onUnavailable() {
+            val hasInternet = ping(network.socketFactory)
+            if (!hasInternet) {
                 trySend(false)
+                return
             }
-        }
-        val request = NetworkRequest.Builder().addCapability(NET_CAPABILITY_INTERNET).build()
 
-        connectivityManager.registerNetworkCallback(request, networkCallback)
-
-        val requestConnectionJob = CoroutineScope(Dispatchers.IO).launch {
-            while (true) {
-                try {
-                    val result = !InetAddress.getByName("www.google.com").equals("")
-                    trySend(result)
-                } catch (e: UnknownHostException) {
-                    trySend(false)
-                    Timber.e(e)
-                }
-
-                delay(5000)
-            }
+            trySend(true)
         }
 
-        awaitClose {
-            connectivityManager.unregisterNetworkCallback(networkCallback)
-            requestConnectionJob.cancel()
+        override fun onLost(network: Network) {
+            super.onLost(network)
+            trySend(false)
         }
     }
 
-    private val _connectionState = MutableSharedFlow<Boolean>(1, 16, BufferOverflow.DROP_OLDEST)
-    val connectionState get() = _connectionState.asSharedFlow()
+    connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
 
-    init {
-        CoroutineScope(Dispatchers.IO).launch {
-            _connectionState.run {
-                connectionFlow.collect(::emit)
-            }
-        }
+    awaitClose { connectivityManager.unregisterNetworkCallback(networkCallback) }
+}
+
+private fun ping(socketFactory: SocketFactory): Boolean {
+    return try {
+        val socket = socketFactory.createSocket() ?: throw IOException("Socket is null.")
+        socket.connect(InetSocketAddress("8.8.8.8", 53), 1500)
+        socket.close()
+        true
+    } catch (e: IOException) {
+        false
     }
 }

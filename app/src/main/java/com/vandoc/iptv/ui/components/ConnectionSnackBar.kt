@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -15,24 +14,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vandoc.iptv.R
-import com.vandoc.iptv.util.ConnectionFlow
 import com.vandoc.iptv.util.NavigatorBarChangeColorManager
+import com.vandoc.iptv.util.monitorNetwork
 
 /**
  * @author Achmad Ichsan
- * @version ConnectionSnackBar, v 0.1 11/07/22 17.55 by Achmad Ichsan
+ * @version ConnectionSnackBar, v 0.2 03/09/22 21.00 by Ichvandi
  */
 
 @Composable
 fun ConnectionSnackBar() {
     val context = LocalContext.current
-    val connectionFlow = remember { ConnectionFlow(context) }
-    val connectionState = connectionFlow.connectionState.collectAsState(initial = true).value
+    val connectionFlow = context.monitorNetwork()
+    val connectionState = connectionFlow?.collectAsState(initial = true)?.value
 
-    if (!connectionState) {
+    if (connectionState != true) {
         ConnectionSnackBarUI(text = "Connection Lost")
     }
-    NavigatorBarChangeColorManager(if (!connectionState) R.color.red else null)
+    NavigatorBarChangeColorManager(if (connectionState != true) R.color.red else null)
 }
 
 @Composable
