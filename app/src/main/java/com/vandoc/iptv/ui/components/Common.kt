@@ -210,3 +210,45 @@ fun TabLayout(tabs: List<TabItem>, onTabSelected: (Int, TabItem) -> Unit) {
         }
     }
 }
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun BaseModalBottomSheet(
+    modifier: Modifier = Modifier,
+    title: String? = null,
+    sheetState: ModalBottomSheetState,
+    content: @Composable () -> Unit,
+    sheetContent: @Composable ColumnScope.() -> Unit
+) {
+    ModalBottomSheetLayout(
+        sheetState = sheetState,
+        sheetElevation = 8.dp,
+        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        sheetContent = {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 16.dp, bottom = 8.dp)
+                    .size(width = 52.dp, height = 6.dp)
+                    .background(
+                        color = if (androidx.compose.material.MaterialTheme.colors.isLight) Color(
+                            0xFF232323
+                        ) else androidx.compose.material.MaterialTheme.colors.surface,
+                        shape = CircleShape
+                    )
+            )
+            if (title != null) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(bottom = 16.dp)
+                )
+            }
+            sheetContent()
+        },
+        modifier = modifier,
+        content = content
+    )
+}
