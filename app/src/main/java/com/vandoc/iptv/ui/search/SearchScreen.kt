@@ -7,19 +7,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.vandoc.iptv.R
 import com.vandoc.iptv.ui.components.*
 import com.vandoc.iptv.ui.destinations.DetailScreenDestination
 import com.vandoc.iptv.util.TOOLBAR_HEIGHT_IN_DP
@@ -277,7 +276,7 @@ fun SearchScreen(
                             navigationIcon = {
                                 IconButton(onClick = { navigator.navigateUp() }) {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.ic_baseline_chevron_left_24),
+                                        imageVector = Icons.Outlined.ChevronLeft,
                                         contentDescription = ""
                                     )
                                 }

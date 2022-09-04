@@ -1,6 +1,5 @@
 package com.vandoc.iptv.ui.components
 
-import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,7 +11,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.Category
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,10 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.vandoc.iptv.data.model.local.*
-import com.vandoc.iptv.ui.theme.IPTVTheme
 import com.vandoc.iptv.util.debounce
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -330,22 +330,6 @@ fun SearchFilterModalBottomSheet(
                 .fillMaxWidth()
         ) {
             Text(text = "Select")
-        }
-    }
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Composable
-fun tes() {
-    IPTVTheme {
-        Column {
-            SectionFilter(
-                title = "Language",
-                contents = listOf("Arab", "Indonesian", "English"),
-                titleIcon = Icons.Outlined.Home,
-                selectedItem = { index, item -> index == 1 }
-            )
         }
     }
 }

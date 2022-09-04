@@ -64,7 +64,7 @@ fun CollapsingToolbarScope.DetailToolbar(
 
     IconButton(onClick = { onNavigateUp?.invoke() }, modifier = Modifier.pin()) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_baseline_chevron_left_24),
+            imageVector = Icons.Outlined.ChevronLeft,
             tint = Color.White,
             contentDescription = ""
         )

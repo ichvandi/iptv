@@ -13,7 +13,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.vandoc.iptv.R
 import com.vandoc.iptv.util.NavigatorBarChangeColorManager
 import com.vandoc.iptv.util.monitorNetwork
 
@@ -31,7 +30,7 @@ fun ConnectionSnackBar() {
     if (connectionState != true) {
         ConnectionSnackBarUI(text = "Connection Lost")
     }
-    NavigatorBarChangeColorManager(if (connectionState != true) R.color.red else null)
+    NavigatorBarChangeColorManager(if (connectionState != true) android.graphics.Color.RED else null)
 }
 
 @Composable
